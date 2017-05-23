@@ -58,11 +58,9 @@ class GiniGain(Criterion):
     def select_best_attribute_and_split(cls, tree_node):
         """Returns the best attribute and its best split, according to the Gini Gain criterion.
 
-        Args:
-          tree_node (TreeNode): tree node where we want to find the best attribute/split.
+        :param tree_node: TreeNode where we want to find the best attribute/split.
 
-        Returns:
-            The best split found.
+        :return: the best Split found.
         """
         original_gini = cls._calculate_gini_index(len(tree_node.valid_samples_indices),
                                                   tree_node.class_index_num_samples)
@@ -132,10 +130,8 @@ class Twoing(Criterion):
     @classmethod
     def select_best_attribute_and_split(cls, tree_node):
         """Returns the best attribute and its best split, according to the Twoing criterion.
-        Args:
-          tree_node (TreeNode): tree node where we want to find the best attribute/split.
-        Returns:
-            The best split found.
+        :param tree_node: TreeNode where we want to find the best attribute/split.
+        :return: the best Split found.
         """
         best_splits_per_attrib = []
         values_seen_per_attrib = []
@@ -379,10 +375,8 @@ class GainRatio(Criterion):
     @classmethod
     def select_best_attribute_and_split(cls, tree_node):
         """Returns the best attribute and its best split, according to the Gain Ratio criterion.
-        Args:
-          tree_node (TreeNode): tree node where we want to find the best attribute/split.
-        Returns:
-            The best split found.
+        :param tree_node: TreeNode where we want to find the best attribute/split.
+        :return: the best Split found.
         """
         # First we calculate the original class frequency and information
         original_information = cls._calculate_information(tree_node.class_index_num_samples,
@@ -472,10 +466,8 @@ class InformationGain(Criterion):
     def select_best_attribute_and_split(cls, tree_node):
         """Returns the best attribute and its best split, according to the Information Gain
         criterion.
-        Args:
-          tree_node (TreeNode): tree node where we want to find the best attribute/split.
-        Returns:
-            The best split found.
+        :param tree_node: TreeNode where we want to find the best attribute/split.
+        :return: the best Split found.
         """
         # First we calculate the original class frequency and information
         original_information = cls._calculate_information(tree_node.class_index_num_samples,

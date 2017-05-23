@@ -19,15 +19,11 @@ class Dataset(object):
     Includes auxiliary data obtained from the dataset. Sometimes used for cross-validation. May
     also include test data together with training data, so that all possible values are known for
     each attribute.
-
-    Args:
-        training_dataset_csv_filepath (str): System filepath to csv file containing the training
-            dataset.
-        key_attrib_index (int, optional): CSV column index of the sample keys. If 'None', samples
-            will be numbered in order of appearance.
-        class_attrib_index (int): CSV column index of the sample class.
-        split_char (str, optional): Split char used in the CSV file. Defaults to ';'.
-        missing_value_string (str): Indicates the current sample does not have this value.
+    :param training_dataset_csv_filepath: (str) system filepath to csv file containing the training dataset.
+    :param key_attrib_index: (int, optional): CSV column index of the sample keys. If 'None', samples will be numbered in order of appearance.
+    :param class_attrib_index: (int) CSV column index of the sample class.
+    :param split_char: (str, optional) split char used in the CSV file. Defaults to ';'.
+    :param missing_value_string: (str) indicates the current sample does not have this value.
 
     Attributes:
         attrib_names (:obj:'list' of :obj'str'): Names of each attribute in order of appearance.
@@ -62,6 +58,7 @@ class Dataset(object):
         class_attrib_index (int): CSV column index of the sample class.
         load_train_dataset_time_taken (float): Total time taken to load dataset and initialize this
             object.
+
     """
 
     def __init__(self, training_dataset_csv_filepath, key_attrib_index, class_attrib_index,
@@ -109,9 +106,9 @@ class Dataset(object):
         # TESTED!
         """Loads the CSV and initialize auxiliary data.
 
-        Args:
-            split_char (str, optional): Split char used in the CSV file. Defaults to ';'.
-            missing_value_string (str): Indicates the current sample does not have this value.
+        :param split_char: (str, optional) split char used in the CSV file. Defaults to ';'.
+        :param missing_value_string: (str) indicates the current sample does not have this value.
+        :return: None
         """
         print()
         print('LOADING dataset...')
@@ -297,12 +294,12 @@ class Dataset(object):
                                class_attrib_index, split_char, missing_value_string):
         """Loads the CSV and initialize auxiliary data.
 
-        Args:
-            test_dataset_csv_filepath (str): path to the test dataset.
-            key_attrib_index (int): column index of the samples' keys on the csv.
-            class_attrib_index (int): column index of the samples' classes on the csv.
-            split_char (str): char used to split columns in the csv.
-            missing_value_string (str): string used to indicate that a sample does not have a value.
+        :param test_dataset_csv_filepath: (str) path to the test dataset.
+        :param key_attrib_index: (int) column index of the samples' keys on the csv.
+        :param class_attrib_index: (int) column index of the samples' classes on the csv.
+        :param split_char: (str) char used to split columns in the csv.
+        :param missing_value_string: (str) string used to indicate that a sample does not have a value.
+        :return: None
         """
         def _is_header_match(train_attrib_names, test_attrib_names):
             """Tests wether both headers are the same (up to lower/uppercase)."""
@@ -579,19 +576,14 @@ def load_config(folderpath):
     """Loads the configuration information for the dataset contained in the given folderpath in a
     dict.
 
-    Args:
-        folderpath (str): path to the dataset folder, which should contain `config.json` and
-        `data.csv` files. `config.json` should have the following fields:
-            - "dataset name" (str): the name of the current dataset;
-            - "key attrib index" (int or null): the index containing the samples keys;
-            - "class attrib index" (int): the index containing the samples classes. If negative,
-                counts backwards.
-            - "split char" (str): character or string used to separate columns in the data.csv file;
-            - "missing value string" (str): string used to indicate a missing value for that sample
-                and attribute.
+    :param folderpath: (str) path to the dataset folder, which should contain `config.json` and `data.csv` files. `config.json` should have the following fields:
+        * "dataset name" (str): the name of the current dataset;
+        * "key attrib index" (int or null): the index containing the samples keys;
+        * "class attrib index" (int): the index containing the samples classes. If negative, counts backwards.
+        * "split char" (str): character or string used to separate columns in the data.csv file;
+        * "missing value string" (str): string used to indicate a missing value for that sample and attribute.
 
-    Returns:
-        A dict with all the config.json key/values and also a "filepath" field, containing the
+    :return: A dict with all the config.json key/values and a "filepath" field, containing the
         data.csv path.
     """
     if not os.path.exists(folderpath):
@@ -657,8 +649,9 @@ def load_config(folderpath):
 def load_all_configs(dataset_basepath):
     """Load information about every dataset available in the `dataset_basepath`.
 
-    Returns:
-        List of config dict information (see return type for `dataset.load_config`).
+    :param dataset_basepath: (str) path to folder containing each dataset in a different subfolder,
+        each with its own config file.
+    :return: List of config dict information (see return type for `dataset.load_config`).
     """
     dataset_folders = [os.path.join(dataset_basepath, entry)
                        for entry in os.listdir(dataset_basepath)
@@ -675,8 +668,9 @@ def load_all_datasets(datasets_configs, load_numeric=False):
     """Creates a Dataset object for every dataset available in the `datasets_configs` list.
     The argument `load_numeric` informs wether we should load numeric attributes or not.
 
-    Returns:
-        List of tuples (dataset_name, Dataset object).
+    :param datasets_configs: (list of dicts) dataset configurations to be loaded.
+    :param load_numeric: (bool, optional) wether to load numeric attributes. Defaults to `False`.
+    :return: List of tuples (dataset_name, Dataset object).
     """
     datasets_list = []
     for dataset_config in datasets_configs:
