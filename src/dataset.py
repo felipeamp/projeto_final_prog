@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# Copyright Felipe de Albuquerque Mello Pereira 2017
 
 """
 This module contains only the Dataset class.

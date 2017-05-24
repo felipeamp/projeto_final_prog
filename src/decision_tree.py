@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# Copyright Felipe de Albuquerque Mello Pereira 2017
 
 """
 Module containing the DecisionTree, TreeNode and NodeSplit classes.
