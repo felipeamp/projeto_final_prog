@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Module containing the DecisionTree, TreeNode and NodeSplit classes.
+"""
+Module containing the DecisionTree, TreeNode and NodeSplit classes.
 """
 
 import collections
@@ -27,7 +28,7 @@ USE_MIN_SAMPLES_SECOND_LARGEST_CLASS = True
 MIN_SAMPLES_SECOND_LARGEST_CLASS = 40
 
 #: Contains the information about an attribute's contingency table. When empty, defaults to
-#: `(None, None)`.
+#: `(None, None)`. Otherwise, contains a np.array in each entry.
 ContingencyTable = collections.namedtuple('ContingencyTable',
                                           ['contingency_table',
                                            'values_num_samples'])
@@ -35,28 +36,35 @@ ContingencyTable.__new__.__defaults__ = (None, None)
 
 
 class DecisionTree(object):
-    """Data structure containing basic information pertaining to the whole tree.
+    """
+    Data structure containing basic information pertaining to the whole tree.
 
-        This class' state should be accessed only indirectly, through its methods.
+    This class' state should be accessed only indirectly, through its methods.
+
+    :param criteria.Criterion criterion: criterion which will be used to generate the tree
+        nodes/splits.
     """
     def __init__(self, criterion):
-        """Initializes a DecisionTree instance with the given arguments.
-
-        :param criterion: (Criterion) criterion which will be used to generate the tree
-            nodes/splits.
-        """
         self._criterion = criterion
         self._curr_dataset = None
         self._root_node = None
 
     def get_root_node(self):
-        """:return: the TreeNode at the root of the tree. Might be None.
+        """
+        :return: the TreeNode at the root of the tree. Might be None.
+        :rtype: decision_tree.TreeNode or None
         """
         return self._root_node
 
     def get_trivial_accuracy(self, test_samples_indices):
-        """:return: the accuracy obtained by classifying all test samples in the most common class
+        """
+        Gets the accuracy obtained by classifying every test samples in the most common class
         among training samples. Must be called after training the tree.
+
+        :param test_samples_indices: indices of samples to be tested.
+        :type test_samples_indices: list[int]
+        :return: the accuracy percentage.
+        :rtype: float.
         """
         num_correct = sum(self._curr_dataset.sample_class[curr_sample_index]
                           == self._root_node.most_common_int_class
@@ -135,31 +143,33 @@ class DecisionTree(object):
 
     def train(self, curr_dataset, training_samples_indices, max_depth, min_samples_per_node,
               use_stop_conditions=False, max_p_value_chi_sq=0.1):
-        """Trains the tree in a recursive fashion, starting at the root's TreeNode. Afterwards,
+        """
+        Trains the tree in a recursive fashion, starting at the root's TreeNode. Afterwards,
         prunes the trivial subtrees.
 
-        :param curr_dataset: (Dataset) dataset containing the samples used for training.
-        :param training_samples_indices: (:obj:'list' of 'int') list containing the indices of
-            samples of `dataset` used for training.
-        :param max_depth: (int) maximum tree depth allowed. Zero means the root is a leaf.
-        :param min_samples_per_node: (int) if a node has less than this number of training samples,
+        :param dataset.Dataset curr_dataset: dataset containing the samples used for training.
+        :param training_samples_indices: list containing the indices of samples of `curr_dataset`
+            used for training.
+        :type training_samples_indices: list[int]
+        :param int max_depth: maximum tree depth allowed. Zero means the root is a leaf.
+        :param int min_samples_per_node: if a node has less than this number of training samples,
             it will necessarily be a leaf.
-        :param use_stop_conditions: (bool, optional) informs wether we should use pruning
-            techniques to avoid using attributes with small number of samples (and, thus, avoiding
-            statistical anomalies). An attribute will be considered invalid if it contains less
-            than `MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE` samples in the second most frequent
-            value (this way at least two values have this number of samples) or if a chi-square
-            test, applied on the attributes' contingency table has a p-value greater or equal to
+        :param bool use_stop_conditions: informs wether we should use pruning techniques to avoid
+            using attributes with small number of samples (and, thus, avoiding statistical
+            anomalies). An attribute will be considered invalid if it contains less than
+            `MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE` samples in the second most frequent value
+            (this way at least two values have this number of samples) or if a chi-square test,
+            applied on the attributes' contingency table has a p-value greater or equal to
             `max_p_value_chi_sq`. When an attribute is considered invalid for the number of samples
             in the second most frequent value, it will be considered invalid in every child node of
             the current TreeNode. If it was considered invalid because of the chi-square test, it
             can be considered valid in a descendant node. Defaults to `False`.
-        :param max_p_value_chi_sq: (float, optional) is the maximum p-value allowed for an
-            attribute to be accepted when doing chi-square tests (that is, when
-            `use_stop_conditions` is `True`). A p-value of 1.0 is equal to 100%. Defaults to `0.1`.
-        :return: tuple containing, in order:
-            * time_taken_pruning (float): time spent pruning the trained tree.
-            * nodes_prunned (int): number of nodes prunned.
+        :param float max_p_value_chi_sq: is the maximum p-value allowed for an attribute to be
+            accepted when doing chi-square tests (that is, when `use_stop_conditions` is `True`).A
+            p-value of 1.0 is equal to 100%. Defaults to `0.1` (which is 10%).
+        :return: tuple containing the time spent pruning the trained tree and the number of nodes
+            prunned.
+        :rtype: tuple(float, int)
         """
         self._curr_dataset = curr_dataset
         print('Starting tree training...')
@@ -182,52 +192,58 @@ class DecisionTree(object):
     def train_and_test(self, curr_dataset, training_samples_indices, validation_sample_indices,
                        max_depth, min_samples_per_node, use_stop_conditions=False,
                        max_p_value_chi_sq=0.1):
-        """Trains a tree with part of the dataset (training samples) and tests the tree
+        """
+        Trains a tree with part of the dataset (training samples) and tests the tree
         classification in another part (validation samples).
 
         Note that although the training and test samples are part of the same Dataset class, they
         usually shouldn't intersect.
 
-        :param dataset: (Dataset) dataset containing the samples used for training.
-        :param training_samples_indices: (:obj:'list' of 'int') list containing the indices of
-            samples of `dataset` used for training.
-        :param validation_sample_indices: (:obj:'list' of 'int') list containing the indices of
-            samples of `dataset` used to test the tree classification.
-        :param max_depth: (int) maximum tree depth allowed. Zero means the root is a leaf.
-        :param min_samples_per_node: (int) if a node has less than this number of training samples,
+        :param dataset.Dataset curr_dataset: dataset containing the samples used for training.
+        :param training_samples_indices: list containing the indices of samples of `curr_dataset`
+            used for training.
+        :type training_samples_indices: list[int]
+        :param validation_sample_indices: list containing the indices of samples of `curr_dataset`
+            used to test the tree classification.
+        :type validation_sample_indices: list[int]
+        :param int max_depth: maximum tree depth allowed. Zero means the root is a leaf.
+        :param int min_samples_per_node: if a node has less than this number of training samples,
             it will necessarily be a leaf.
-        :param use_stop_conditions: (bool, optional) informs wether we should use pruning
-            techniques to avoid using attributes with small number of samples (and, thus, avoiding
-            statistical anomalies). An attribute will be considered invalid if it contains less
-            than `MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE` samples in the second most frequent
-            value (this way at least two values have this number of samples) or if a chi-square
-            test, applied on the attributes' contingency table has a p-value greater or equal to
+        :param bool use_stop_conditions: informs wether we should use pruning techniques to avoid
+            using attributes with small number of samples (and, thus, avoiding statistical
+            anomalies). An attribute will be considered invalid if it contains less than
+            `MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE` samples in the second most frequent value
+            (this way at least two values have this number of samples) or if a chi-square test,
+            applied on the attributes' contingency table has a p-value greater or equal to
             `max_p_value_chi_sq`. When an attribute is considered invalid for the number of samples
             in the second most frequent value, it will be considered invalid in every child node of
             the current TreeNode. If it was considered invalid because of the chi-square test, it
             can be considered valid in a descendant node. Defaults to `False`.
-        :param max_p_value_chi_sq: (float, optional) is the maximum p-value allowed for an
-            attribute to be accepted when doing chi-square tests (that is, when
-            `use_stop_conditions` is `True`). A p-value of 1.0 is equal to 100%. Defaults to `0.1`.
-
+        :param float max_p_value_chi_sq: is the maximum p-value allowed for an attribute to be
+            accepted when doing chi-square tests (that is, when `use_stop_conditions` is `True`). A
+            p-value of 1.0 is equal to 100%. Defaults to `0.1` (which is 10%).
         :return: A tuple containing the tree's max depth in the second entry, the time taken
             pruning in the third entry and the number of nodes prunned in the fourth entry. In the
             first entry it returns another tuple containing, in order:
+
             * a list of predicted class for each validation sample;
             * the number of correct classifications;
             * the number of correct classifications done without validation samples with unkown
-                values (that is, values that are unkown at a TreeNode -- they are classified as
-                the most common class at that node);
-            * the total cost of the classification errors (when errors costs are uniform, this
-                is equal to the total number of validation samples minus the number of correct
-                classifications);
-            *  the total cost of the classification errors without considering validation
-                samples with unkown values;
+              values (that is, values that are unkown at a TreeNode -- they are classified as the
+              most common class at that node);
+            * the total cost of the classification errors (when errors costs are uniform, this is
+              equal to the total number of validation samples minus the number of correct
+              classifications);
+            *  the total cost of the classification errors without considering validation samples
+               with unkown values;
             * a list of booleans indicating if the i-th validation sample was classified with an
-                unkown value;
+              unkown value;
             * the number of validation samples classified with unkown values;
-            * list where the i-th entry has the attribute index used for classification of the
-                i-th sample when an unkown value occurred.
+            * list where the i-th entry has the attribute index used for classification of the i-th
+              sample when an unkown value occurred.
+
+        :rtype: tuple(tuple(list[int], int, int, float, float, list[bool], int, list[int]), int,
+            float, int)
         """
         time_taken_pruning, num_nodes_prunned = self.train(curr_dataset,
                                                            training_samples_indices,
@@ -249,64 +265,66 @@ class DecisionTree(object):
     def cross_validate(self, curr_dataset, num_folds, max_depth, min_samples_per_node,
                        is_stratified=True, print_tree=False, seed=None, print_samples=False,
                        use_stop_conditions=False, max_p_value_chi_sq=0.1):
-        """Does a cross-validation using a given dataset.
+        """
+        Does a cross-validation using a given dataset.
 
         It splits this dataset in `num_folds` folds and calls `train_and_test` on each. Might
         be given a seed for the dataset's random splitting and might be stratified.
 
-        :param curr_dataset: (Dataset) dataset containing the samples used for training.
-        :param num_folds: (int) number of folds used in the cross-validation.
-        :param max_depth: (int) maximum tree depth allowed. Zero means the root is a leaf.
-        :param min_samples_per_node: (int) if a node has less than this number of training samples,
+        :param dataset.Dataset curr_dataset: dataset containing the samples used for training.
+        :param int num_folds: number of folds used in the cross-validation.
+        :param int max_depth: maximum tree depth allowed. Zero means the root is a leaf.
+        :param int min_samples_per_node: if a node has less than this number of training samples,
             it will necessarily be a leaf.
-        :param is_stratified: (bool, optional) Indicates wheter the cross-validation should be
-            stratified or just a simple k-fold cross-validation. Stratified means the samples'
-            splitting will try to keep the classes' distribution the same across folds. Defaults to
-            `True`.
-        :param print_tree: (bool, optional) Indicates wether the trees of every fold should be
-            printed to stdout. Defaults to `False`.
-        :param seed: (int, optional) indicates the seed that should be used to generate the random
-                samples' splitting in folds. If `None`, a random seed is used. Defaults to `None`.
-        :param print_samples: (bool, optional) if `True`, prints the samples indices used at each
-            fold. Used for debugging. Defaults to `False`.
-        :param use_stop_conditions: (bool, optional) informs wether we should use pruning
-            techniques to avoid using attributes with small number of samples (and, thus, avoiding
-            statistical anomalies). An attribute will be considered invalid if it contains less
-            than `MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE` samples in the second most frequent
-            value (this way at least two values have this number of samples) or if a chi-square
-            test, applied on the attributes' contingency table has a p-value greater or equal to
+        :param bool is_stratified: Indicates wheter the cross-validation should be stratified or
+            just a simple k-fold cross-validation. Stratified means the samples' splitting will try
+            to keep the classes' distribution the same across folds. Defaults to `True`.
+        :param bool print_tree: Indicates wether the trees of every fold should be printed to
+            stdout. Defaults to `False`.
+        :param seed: indicates the seed that should be used to generate the random samples'
+            splitting in folds. If `None`, a random seed is used. Defaults to `None`.
+        :type seed: int or None
+        :param bool print_samples: if `True`, prints the samples indices used at each fold. Used for
+            debugging. Defaults to `False`.
+        :param bool use_stop_conditions: informs wether we should use pruning techniques to avoid
+            using attributes with small number of samples (and, thus, avoiding statistical
+            anomalies). An attribute will be considered invalid if it contains less than
+            `MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE` samples in the second most frequent value
+            (this way at least two values have this number of samples) or if a chi-square test,
+            applied on the attributes' contingency table has a p-value greater or equal to
             `max_p_value_chi_sq`. When an attribute is considered invalid for the number of samples
             in the second most frequent value, it will be considered invalid in every child node of
             the current TreeNode. If it was considered invalid because of the chi-square test, it
             can be considered valid in a descendant node. Note that numeric attributes are never
             tested in this way. Defaults to `False`.
-        :param max_p_value_chi_sq: (float, optional) is the maximum p-value allowed for an
-            attribute to be accepted when doing chi-square tests (that is, when
-            `use_stop_conditions` is `True`). A p-value of 1.0 is equal to 100%. Defaults to `0.1`.
-
+        :param float max_p_value_chi_sq: is the maximum p-value allowed for an attribute to be
+            accepted when doing chi-square tests (that is, when `use_stop_conditions` is `True`). A
+            p-value of 1.0 is equal to 100%. Defaults to `0.1` (which is 10%).
         :return: A tuple containing, in order:
+
             * a list of predicted class for each sample;
             * the number of correct classifications;
-            * the number of correct classifications done without samples with unkown values;
-                (that is, values that are unkown at a TreeNode -- they are classified as the
-                most common class at that node);
+            * the number of correct classifications done without samples with unkown values; (that
+              is, values that are unkown at a TreeNode -- they are classified as the most common
+              class at that node);
             * the total cost of the classification errors (when errors costs are uniform, this
-                is equal to the total number of samples minus the number of correct
-                classifications);
-            * the total cost of the classification errors without considering samples with
-                unkown values;
-            * a list of booleans indicating if the i-th sample was classified with an unkown
-                value;
+              is equal to the total number of samples minus the number of correct classifications);
+            * the total cost of the classification errors without considering samples with unkown
+              values;
+            * a list of booleans indicating if the i-th sample was classified with an unkown value;
             * the number of samples classified with unkown values;
-            * list where the i-th entry has the attribute index used for classification of the
-                i-th sample when an unkown value occurred;
+            * list where the i-th entry has the attribute index used for classification of the i-th
+              sample when an unkown value occurred;
             * list containing the time spent pruning in each fold;
             * list containing the number of nodes prunned in each fold;
             * list containing the maximum tree depth for each fold;
             * list containing the number of nodes per fold, after pruning;
             * list containing the number of valid attributes in root node in each fold;
             * Accuracy percentage obtained by classifying, in each fold, the test samples in the
-            most common class among training samples.
+              most common class among training samples.
+
+        :rtype: tuple(list[int], int, int, float, float, list[bool], int, list[int], list[float],
+            list[int], list[int], list[int], list[int], list[float])
         """
         classifications = [0] * curr_dataset.num_samples
         num_correct_classifications = 0
@@ -482,28 +500,33 @@ class DecisionTree(object):
                  100.0 * num_correct_trivial_classifications / curr_dataset.num_samples)
 
     def test(self, test_sample_indices):
-        """Tests the (already trained) tree over samples from the same dataset as the
+        """
+        Tests the (already trained) tree over samples from the same dataset as the
             training set. If the tree hasn't been trained, the program will exit.
 
-        :param test_sample_indices: (:obj:'list' of 'int') list of the test set indices for samples
-            from the same dataset used for training.
+        :param test_sample_indices: list of the test set indices for samples from the same dataset
+            used for training.
+        :type test_sample_indices: list[int]
 
         :return: A tuple containing, in order:
+
             * a list of predicted class for each test sample;
             * the number of correct classifications;
-            * the number of correct classifications done without test samples with unkown
-                values (that is, values that are unkown at a TreeNode -- they are classified as
-                the most common class at that node);
-            * the total cost of the classification errors (when errors costs are uniform, this
-                is equal to the total number of test samples minus the number of correct
-                classifications);
-            *  the total cost of the classification errors without considering test
-                samples with unkown values;
-            * a list of booleans indicating if the i-th test sample was classified with an
-                unkown value;
+            * the number of correct classifications done without test samples with unkown values
+              (that is, values that are unkown at a TreeNode -- they are classified as the most
+              common class at that node);
+            * the total cost of the classification errors (when errors costs are uniform, this is
+              equal to the total number of test samples minus the number of correct
+              classifications);
+            *  the total cost of the classification errors without considering test samples with
+               unkown values;
+            * a list of booleans indicating if the i-th test sample was classified with an unkown
+              value;
             * the number of test samples classified with unkown values;
-            * list where the i-th entry has the attribute index used for classification of the
-                i-th sample when an unkown value occurred.
+            * list where the i-th entry has the attribute index used for classification of the i-th
+              sample when an unkown value occurred.
+
+        :rtype: tuple(list[int], int, int, float, float, list[bool], int, list[int])
         """
 
         if self._root_node is None:
@@ -517,32 +540,37 @@ class DecisionTree(object):
 
     def test_from_csv(self, test_dataset_csv_filepath, key_attrib_index, class_attrib_index,
                       split_char, missing_value_string):
-        """Tests the (already trained) tree using all samples from a given csv file. If the tree
+        """
+        Tests the (already trained) tree using all samples from a given csv file. If the tree
         hasn't been trained, the program will exit.
 
-        :param test_dataset_csv_filepath: (str) path to the test dataset.
-        :param key_attrib_index: (int) column index of the samples' keys on the csv.
-        :param class_attrib_index: (int) column index of the samples' classes on the csv.
-        :param split_char: (str) char used to split columns in the csv.
-        :param missing_value_string: (str) string used to indicate that a sample does not have a
-            value.
+        :param str test_dataset_csv_filepath: path to the test dataset.
+        :param key_attrib_index: column index of the samples' keys on the csv.
+        :type key_attrib_index: int or None
+        :param int class_attrib_index: column index of the samples' classes on the csv.
+        :param str split_char: char used to split columns in the csv.
+        :param missing_value_string: string used to indicate that a sample does not have a value.
+        :type missing_value_string: int or None
 
         :return: A tuple containing, in order:
+
             * a list of predicted class for each test sample;
             * the number of correct classifications;
             * the number of correct classifications done without test samples with unkown values
-                (that is, values that are unkown at a TreeNode -- they are classified as the most
-                common class at that node);
-            * the total cost of the classification errors (when errors costs are uniform, this
-                is equal to the total number of test samples minus the number of correct
-                classifications);
+              (that is, values that are unkown at a TreeNode -- they are classified as the most
+              common class at that node);
+            * the total cost of the classification errors (when errors costs are uniform, this is
+              equal to the total number of test samples minus the number of correct
+              classifications);
             *  the total cost of the classification errors without considering test samples with
-                unkown values;
+               unkown values;
             * a list of booleans indicating if the i-th test sample was classified with an unkown
-                value;
+              value;
             * the number of test samples classified with unkown values;
             * list where the i-th entry has the attribute index used for classification of the i-th
-                sample when an unkown value occurred.
+              sample when an unkown value occurred.
+
+        :rtype: tuple(list[int], int, int, float, float, list[bool], int, list[int])
         """
 
         if self._root_node is None or self._curr_dataset is None:
@@ -560,11 +588,13 @@ class DecisionTree(object):
                                       self._curr_dataset.test_sample_index_to_key)
 
     def save_tree(self, filepath=None):
-        """Saves the tree information: nodes, attributes used to split each one, values to each
-        side, etc.
+        """
+        Saves the tree information: nodes, attributes used to split each one, values to each side,
+        etc.
 
-        :param filepath: (str, optional) file in which to save the tree. If `None`, prints to
-            stdout. Defaults to `None`.
+        :param filepath: file in which to save the tree. If `None`, prints to stdout. Defaults to
+            `None`.
+        :type filepath: str or None
         :return: None.
         """
         # TESTED!
@@ -604,69 +634,67 @@ class DecisionTree(object):
 
 
 class TreeNode(object):
-    """Contains information of a certain node of a decision tree.
+    """
+    Contains information of a certain node of a decision tree.
 
-        It has information about the samples used during training at this node and also about it's
+    It has information about the samples used during training at this node and also about it's
     NodeSplit.
 
-    Attributes:
-        is_leaf (bool): indicates if the current TreeNode is a tree leaf.
-        max_depth_remaining (int): maximum depth that the subtree rooted at the current TreeNode can
-            still grow. If zero, the current TreeNode will be a leaf.
-        node_split (NodeSplit): Data structure containing information about which attribute and
-            split values were obtained in this TreeNode with a certain criterion. Also contains the
-            criterion value. It is None if the current TreeNode is a leaf.
-        nodes (:obj:'list' of 'TreeNode'): list containing every child TreeNode from the current
-            TreeNode.
-        contingency_tables (:obj:'list' of 'tuple' of 'list' of 'np.array'): contains a list where
-            the i-th entry is a tuple containing two pieces of information of the i-th attribute:
-            the contingency table for that attribute (value index is row, class index is column) and
-            a list of number of times each value is attained in the training set (i-th entry is the
-            number of times a sample has value i in this attribute and training dataset). Used by
-            many criteria when calculating the optimal split. Note that, for invalid attributes, the
-            entry is a tuple with empty lists ([], []).
-        curr_dataset (Dataset): dataset containing the training samples.
-        valid_samples_indices (:obj:'list' of 'int'): contains the indices of the valid training
-            samples.
-        valid_nominal_attribute (:obj:'list' of 'bool'): list where the i-th entry indicates wether
-            the i-th attribute from the dataset is valid and nominal or not.
-        num_valid_nominal_attributes_diff ('int'): number of attributes with different number of
-            values.
-        num_valid_samples (int): number of training samples in this TreeNode.
-        class_index_num_samples (:obj:'list' of 'int'): list where the i-th entry indicates the
-            number of samples having class i.
-        most_common_int_class (int): index of the most frequent class.
-        number_non_empty_classes (int): number of classes having no sample in this TreeNode.
+    :param dataset.Dataset curr_dataset: dataset of samples used for training/split generation.
+    :param valid_samples_indices: indices of samples that should be used for training at this node.
+    :type valid_samples_indices: list[int]
+    :param valid_nominal_attribute: the i-th entry informs wether the i-th attribute is a valid
+        nominal one.
+    :type valid_samples_indices: list[bool]
+    :param int max_depth_remaining: maximum depth that the subtree rooted at this node can have. If
+        zero, this node will be a leaf.
+    :param int min_samples_per_node: minimum number of samples that must be present in order to try
+        to create a subtree rooted at this node. If less than this, this node will be a leaf.
+    :param bool use_stop_conditions: informs wether we should use pruning techniques to avoid using
+        attributes with small number of samples (and, thus, avoiding statistical anomalies). An
+        attribute will be considered invalid if it contains less than
+        `MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE` samples in the second most frequent value (this
+        way at least two values have this number of samples) or if a chi-square test, applied on the
+        attributes' contingency table has a p-value greater or equal to `max_p_value_chi_sq`. When
+        an attribute is considered invalid for the number of samples in the second most frequent
+        value, it will be considered invalid in every child node of the current TreeNode. If it was
+        considered invalid because of the chi-square test, it can be considered valid in a
+        descendant node. Defaults to `False`.
+    :param float max_p_value_chi_sq: is the maximum p-value allowed for an attribute to be accepted
+        when doing chi-square tests (that is, when `use_stop_conditions` is `True`). A p-value of
+        1.0 is equal to 100%. Defaults to `0.1` (which is 10%).
+    :ivar bool is_leaf: True: indicates if the current TreeNode is a tree leaf.
+    :ivar int max_depth_remaining: maximum depth that the subtree rooted at the current TreeNode can
+        still grow. If zero, the current TreeNode will be a leaf.
+    :ivar node_split: None: Data structure containing information about which attribute and split values
+        were obtained in this TreeNode with a certain criterion. Also contains the criterion value.
+        It is `None` if the current TreeNode is a leaf.
+    :vartype node_split: decision_tree.NodeSplit or None.
+    :ivar nodes: []: list containing every child TreeNode from the current TreeNode.
+    :vartype nodes: list[decision_tree.TreeNode]
+    :ivar contingency_tables: contains a list where the i-th entry is a tuple containing two pieces
+        of information of the i-th attribute: the contingency table for that attribute (value index
+        is row, class index is column) and a list of number of times each value is attained in the
+        training set (i-th entry is the number of times a sample has value i in this attribute and
+        training dataset). Used by many criteria when calculating the optimal split. Note that, for
+        invalid attributes, the entry is an empty decision_tree.ContingencyTable.
+    :vartype contingency_tables: decision_tree.ContingencyTable or None.
+    :ivar dataset.Dataset curr_dataset: dataset containing the training samples.
+    :ivar valid_samples_indices: contains the indices of the valid training samples.
+    :vartype valid_samples_indices: list[int]
+    :ivar valid_nominal_attribute: list where the i-th entry indicates wether the i-th attribute
+        from the dataset is valid and nominal or not.
+    :vartype valid_nominal_attribute: list[bool]
+    :vartype int num_valid_samples: number of training samples in this TreeNode.
+    :vartype class_index_num_samples: list where the i-th entry indicates the number of samples
+        having class i.
+    :vartype class_index_num_samples: list[int]
+    :vartype int most_common_int_class: index of the most frequent class.
+    :vartype int number_non_empty_classes: number of classes having no sample in this TreeNode.
     """
     def __init__(self, curr_dataset, valid_samples_indices, valid_nominal_attribute,
                  max_depth_remaining, min_samples_per_node, use_stop_conditions=False,
                  max_p_value_chi_sq=0.1):
-        """Initializes a TreeNode instance with the given arguments.
-
-        :param curr_dataset: (Dataset) dataset of samples used for training/split generation.
-        :param valid_samples_indices: (:obj:'list' of 'int') indices of samples that should be used
-            for training at this node.
-        :param valid_nominal_attribute: (:obj:'list' of 'bool') the i-th entry informs wether the
-            i-th attribute is a valid nominal one.
-        :param max_depth_remaining: (int) maximum depth that the subtree rooted at this node can
-            have. If zero, this node will be a leaf.
-        :param min_samples_per_node: (int) minimum number of samples that must be present in order
-            to try to create a subtree rooted at this node. If less than this, this node will be a
-            leaf.
-        :param use_stop_conditions: (bool, optional) informs wether we should use pruning
-            techniques to avoid using attributes with small number of samples (and, thus, avoiding
-            statistical anomalies). An attribute will be considered invalid if it contains less
-            than `MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE` samples in the second most frequent
-            value (this way at least two values have this number of samples) or if a chi-square
-            test, applied on the attributes' contingency table has a p-value greater or equal to
-            `max_p_value_chi_sq`. When an attribute is considered invalid for the number of samples
-            in the second most frequent value, it will be considered invalid in every child node of
-            the current TreeNode. If it was considered invalid because of the chi-square test, it
-            can be considered valid in a descendant node. Defaults to `False`.
-        :param max_p_value_chi_sq: (float, optional) is the maximum p-value allowed for an
-            attribute to be accepted when doing chi-square tests (that is, when
-            `use_stop_conditions` is `True`). A p-value of 1.0 is equal to 100%. Defaults to `0.1`.
-        """
         self._use_stop_conditions = use_stop_conditions
         self._max_p_value_chi_sq = max_p_value_chi_sq
 
@@ -687,16 +715,15 @@ class TreeNode(object):
 
         self.num_valid_samples = len(valid_samples_indices)
         self.class_index_num_samples = [0] * curr_dataset.num_classes
-        self.most_common_int_class = None
-        self.number_non_empty_classes = 0
-
         # Fill self.class_index_num_samples
         for sample_index in valid_samples_indices:
             self.class_index_num_samples[
                 curr_dataset.sample_class[sample_index]] += 1
-
+        number_non_empty_classes = sum(num_samples_curr_class > 0
+                                       for num_samples_curr_class in self.class_index_num_samples)
         self.most_common_int_class = self.class_index_num_samples.index(
             max(self.class_index_num_samples))
+
         self._calculate_contingency_tables()
 
     def _calculate_contingency_tables(self):
@@ -725,9 +752,9 @@ class TreeNode(object):
     def _is_attribute_valid(self, attrib_index, min_allowed_in_two_largest):
         """Returns a pair of booleans indicating:
             * wether the current attribute has more than `min_allowed_in_two_largest` samples in
-                second most frequent value;
+              second most frequent value;
             * wether the condition above is `True` AND its chi-square test's p-value is smaller than
-                `self._max_p_value_chi_sq`.
+              `self._max_p_value_chi_sq`.
         """
         def _get_chi_square_test_p_value(contingency_table, values_num_samples):
             classes_seen = set()
@@ -773,6 +800,7 @@ class TreeNode(object):
         """Given the splitting criterion, creates a tree rooted at the current TreeNode.
 
         :param criterion: (Criterion) splitting criterion used to create the tree recursively.
+        :return: None
         """
 
         def _get_values_to_split(splits_values):
@@ -904,19 +932,23 @@ class TreeNode(object):
     def get_most_popular_subtree(self):
         """
         :return: the number of samples in the most popular subtree. If it is leaf, returns
-        `self.num_valid_samples`.
+            `self.num_valid_samples`.
+        :rtype: int
         """
         if self.is_leaf:
             return self.num_valid_samples
         return max(subtree.num_valid_samples for subtree in self.nodes)
 
     def prune_trivial_subtrees(self):
-        """Applies pruning to an already trained tree. Returns the number of prunned nodes.
+        """
+        Applies pruning to an already trained tree. Returns the number of prunned nodes.
 
         If a TreeNode is trivial, that is, every leaf in its subtree has the same
         `most_common_int_class`, then the current TreeNode becomes a leaf with this class, deleting
         every child node in this process. It is applied recursively.
+
         :return: number of nodes prunned.
+        :rtype: int
         """
         num_prunned = 0
         if not self.is_leaf:
@@ -936,7 +968,8 @@ class TreeNode(object):
     def get_num_nodes(self):
         """
         :return: the number of nodes in the tree rooted at the current TreeNode (counting includes
-        leaves and the current TreeNode).
+            leaves and the current TreeNode).
+        :rtype: int
         """
         num_nodes = 1
         for child_node in self.nodes:
@@ -946,7 +979,8 @@ class TreeNode(object):
     def get_max_depth(self):
         """
         :return: the maximum depth of the tree rooted at the current TreeNode. If the current node
-        is a leaf, it will return zero.
+            is a leaf, it will return zero.
+        :rtype: int
         """
         if self.is_leaf:
             return 0
@@ -963,22 +997,21 @@ class NodeSplit(object):
 
     Used for debugging and for the classification of test samples.
 
-    Attributes:
-        separation_attrib_index (int): Index of the attribute used for splitting.
-        splits_values (:obj:'list' of 'set' of 'int'): list containing a set of attribute values for
-            each TreeNode child. Binary splits have two sets (left and right split values), multiway
-            splits may have many more.
-        values_to_split (:obj:'dict' of 'int'): reversed index for `splits_values`. Given a value,
-            it returns the index of the split that this value belongs to.
-        criterion_value (float): criterion value for this split.
+    :param criteria.Split split: Split information (attribute index, split values and criterion
+        value)
+    :param values_to_split: reversed index for `splits_values`. Given a value, it returns the index
+        of the split that this value belongs to.
+    :type values_to_split: dict[int, int]
+    :ival int separation_attrib_index: Index of the attribute used for splitting.
+    :ival splits_values: list containing a set of attribute values for each TreeNode child. Binary
+        splits have two sets (left and right split values), multiway splits may have many more.
+    :valtype splits_values: list[set(int)]
+    :ival values_to_split: reversed index for `splits_values`. Given a value, it returns the index
+        of the split that this value belongs to.
+    :valtype values_to_split: dict[int, int]
+    :ival float criterion_value: criterion value for this split.
     """
     def __init__(self, split, values_to_split):
-        """Initializes a TreeNode instance with the given arguments.
-
-        :param split: (Split) Split information (attribute index, split values and criterion value)
-        :param values_to_split: (:obj:'dict' of 'int') reversed index for `splits_values`. Given a
-            value, it returns the index of the split that this value belongs to.
-        """
         self.separation_attrib_index = split.attrib_index
         self.splits_values = split.splits_values
         self.values_to_split = values_to_split

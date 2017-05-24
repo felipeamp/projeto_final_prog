@@ -19,51 +19,62 @@ class Dataset(object):
     Includes auxiliary data obtained from the dataset. Sometimes used for cross-validation. May
     also include test data together with training data, so that all possible values are known for
     each attribute.
-    :param training_dataset_csv_filepath: (str) system filepath to csv file containing the training dataset.
-    :param key_attrib_index: (int, optional): CSV column index of the sample keys. If 'None', samples will be numbered in order of appearance.
-    :param class_attrib_index: (int) CSV column index of the sample class.
-    :param split_char: (str, optional) split char used in the CSV file. Defaults to ';'.
-    :param missing_value_string: (str) indicates the current sample does not have this value.
 
-    Attributes:
-        attrib_names (:obj:'list' of :obj'str'): Names of each attribute in order of appearance.
-        num_classes (int): number of different classes in dataset.
-        num_samples (int): number of samples in dataset.
-        sample_index_to_key (:obj:'list' of 'str'): Sample names in order of appearance in CSV.
-        sample_key_to_index (:obj:'dict' from 'str' to 'int'): Sample index by key.
-        samples (:obj:'list' of 'list' of 'int'): list of samples, each represented by a list of
-            it's attributes values (represented by ints).
-        attrib_int_to_value (:obj:'list' of 'list' of 'str'): Given an attribute index and it's int
-            value representation, returns the string value represented by this int.
-        attrib_value_to_int (:obj:'list' of 'list' of 'str'): Given an attribute index and it's
-            string value, returns the int value that represents it.
-        valid_nominal_attribute (:obj:'list' of 'bool'): Indicates if each attribute is valid and
-            nominal.
-        valid_numeric_attribute (:obj:'list' of 'bool'): Indicates if each attribute is valid and
-            numeric.
-        class_name_to_int (:obj:'dict' from 'str' to 'int'): Given a class name, returns the int
-            value that represents it.
-        class_int_to_name (:obj:'list' of 'str'): Given a class int value representation, returns
-            the class name it represents.
-        class_index_num_samples (:obj:'list' of 'int'): Number of samples for the class given by
-            this int representation.
-        number_samples_in_rarest_class ('int'): Number of samples in the rarest class in CSV.
-        sample_class (:obj:'list' of 'int'): Class for each sample, by index.
-        sample_costs (:obj:'list' of 'list' of 'float'): Misclassification cost for each sample, by
-            class int.
-        training_dataset_csv_filepath (str): System filepath to csv file containing the training
-            dataset.
-        key_attrib_index (int, optional): CSV column index of the sample keys. If 'None', samples
-            will be numbered in order of appearance.
-        class_attrib_index (int): CSV column index of the sample class.
-        load_train_dataset_time_taken (float): Total time taken to load dataset and initialize this
-            object.
-
+    :param str training_dataset_csv_filepath: system filepath to csv file containing the training
+        dataset.
+    :param key_attrib_index: CSV column index of the sample keys. If 'None', samples will be
+        numbered in order of appearance.
+    :type key_attrib_index: str or None
+    :param int class_attrib_index: CSV column index of the sample class.
+    :param str split_char: split char used in the CSV file. Defaults to ';'.
+    :param str missing_value_string: indicates the current sample does not have this value.
+    :ivar attrib_names: []: Names of each attribute in order of appearance.
+    :vartype attrib_names: list[str]
+    :ivar int num_classes: 0: number of different classes in dataset.
+    :ivar int num_samples: 0: number of samples in dataset.
+    :ivar sample_index_to_key: []: Sample names in order of appearance in CSV.
+    :vartype sample_index_to_key: list[str]
+    :ivar sample_key_to_index: {}: Sample index by key.
+    :vartype sample_key_to_index: dict[str, int]
+    :ivar samples: []: list of samples, each represented by a list of it's attributes values
+        (represented by ints).
+    :vartype samples: list[list[int]]
+    :ivar attrib_int_to_value: []: Given an attribute index and it's int value representation,
+        returns the string value represented by this int.
+    :vartype attrib_int_to_value: list[list[str]]
+    :ivar attrib_value_to_int: []: Given an attribute index and it's string value, returns the int
+        value that represents it.
+    :vartype attrib_value_to_int: list[dict[str, int]]
+    :ivar valid_nominal_attribute: []: Indicates if each attribute is valid and nominal.
+    :vartype valid_nominal_attribute: list[bool]
+    :ivar valid_numeric_attribute: []: Indicates if each attribute is valid and numeric.
+    :vartype valid_numeric_attribute: list[bool]
+    :ivar class_name_to_int: {}: Given a class name, returns the int value that represents it.
+    :vartype class_name_to_int: dict[str, int]
+    :ivar class_int_to_name: []: Given a class int value representation, returns the class name it
+        represents.
+    :vartype class_name_to_int: list[str]
+    :ivar class_index_num_samples: []: Number of samples for the class given by this int
+        representation.
+    :vartype class_index_num_samples: list[int]
+    :ivar int number_samples_in_rarest_class: 0: Number of samples in the rarest class in CSV.
+    :ivar sample_class: []: Class for each sample, by index.
+    :vartype sample_class: list[int]
+    :ivar sample_costs: []: Misclassification cost for each sample, by class int.
+    :vartype sample_costs: list[list[float]]
+    :ivar str training_dataset_csv_filepath: System filepath to csv file containing the training
+        dataset.
+    :ivar key_attrib_index: CSV column index of the sample keys. If 'None', samples will be numbered
+        in order of appearance.
+    :vartype key_attrib_index: int or None
+    :ivar int class_attrib_index: CSV column index of the sample class.
+    :ivar float load_train_dataset_time_taken: Total time taken to load dataset and initialize this
+        Dataset object.
+    :ivar bool load_numeric: False: Wether or not to load numeric attributes.
     """
 
     def __init__(self, training_dataset_csv_filepath, key_attrib_index, class_attrib_index,
                  split_char, missing_value_string, load_numeric=False):
-        # Init variables to default value
         self.attrib_names = []
         self.num_classes = 0
         self.num_samples = 0
@@ -103,11 +114,11 @@ class Dataset(object):
         self._print_loaded_information()
 
     def _load_train_dataset(self, split_char, missing_value_string):
-        # TESTED!
         """Loads the CSV and initialize auxiliary data.
 
-        :param split_char: (str, optional) split char used in the CSV file. Defaults to ';'.
-        :param missing_value_string: (str) indicates the current sample does not have this value.
+        :param str split_char: split char used in the CSV file. Defaults to ';'.
+        :param missing_value_string: indicates the current sample does not have this value.
+        :type missing_value_string: str or None
         :return: None
         """
         print()
@@ -263,7 +274,6 @@ class Dataset(object):
             sys.exit(1)
 
     def _initialize_integer_costs(self, sample_class):
-        # TESTED!
         """Initialize costs for each sample (1.0 for wrong class and 0.0 for the correct one).
         """
         sample_costs = []
@@ -273,7 +283,6 @@ class Dataset(object):
         return sample_costs
 
     def _print_loaded_information(self):
-        # TESTED!
         """Prints basic information of the loaded CSV.
         """
         print('Number of attributes: {}'.format(
@@ -292,13 +301,15 @@ class Dataset(object):
 
     def load_test_set_from_csv(self, test_dataset_csv_filepath, key_attrib_index,
                                class_attrib_index, split_char, missing_value_string):
-        """Loads the CSV and initialize auxiliary data.
+        """Loads the CSV and initializes auxiliary data.
 
-        :param test_dataset_csv_filepath: (str) path to the test dataset.
-        :param key_attrib_index: (int) column index of the samples' keys on the csv.
-        :param class_attrib_index: (int) column index of the samples' classes on the csv.
-        :param split_char: (str) char used to split columns in the csv.
-        :param missing_value_string: (str) string used to indicate that a sample does not have a value.
+        :param str test_dataset_csv_filepath: path to the test dataset.
+        :param key_attrib_index: column index of the samples' keys on the csv.
+        :type key_attrib_index: int or None
+        :param int class_attrib_index: column index of the samples' classes on the csv.
+        :param str split_char: char used to split columns in the csv.
+        :param missing_value_string: string used to indicate that a sample does not have a value.
+        :type missing_value_string: str or None
         :return: None
         """
         def _is_header_match(train_attrib_names, test_attrib_names):
@@ -576,15 +587,20 @@ def load_config(folderpath):
     """Loads the configuration information for the dataset contained in the given folderpath in a
     dict.
 
-    :param folderpath: (str) path to the dataset folder, which should contain `config.json` and `data.csv` files. `config.json` should have the following fields:
+    :param str folderpath: path to the dataset folder, which should contain `config.json` and
+        `data.csv` files. `config.json` should have the following fields:
+
         * "dataset name" (str): the name of the current dataset;
         * "key attrib index" (int or null): the index containing the samples keys;
-        * "class attrib index" (int): the index containing the samples classes. If negative, counts backwards.
+        * "class attrib index" (int): the index containing the samples classes. If negative, counts
+          backwards.
         * "split char" (str): character or string used to separate columns in the data.csv file;
-        * "missing value string" (str): string used to indicate a missing value for that sample and attribute.
+        * "missing value string" (str): string used to indicate a missing value for that sample and
+          attribute.
 
     :return: A dict with all the config.json key/values and a "filepath" field, containing the
         data.csv path.
+    :rtype: dict[str, str or int or None]
     """
     if not os.path.exists(folderpath):
         print('Folder "{}" does not exist.'.format(folderpath))
@@ -649,9 +665,10 @@ def load_config(folderpath):
 def load_all_configs(dataset_basepath):
     """Load information about every dataset available in the `dataset_basepath`.
 
-    :param dataset_basepath: (str) path to folder containing each dataset in a different subfolder,
+    :param str dataset_basepath: path to folder containing each dataset in a different subfolder,
         each with its own config file.
     :return: List of config dict information (see return type for `dataset.load_config`).
+    :rtype: list[dict[str, str or int or None]]
     """
     dataset_folders = [os.path.join(dataset_basepath, entry)
                        for entry in os.listdir(dataset_basepath)
@@ -668,9 +685,11 @@ def load_all_datasets(datasets_configs, load_numeric=False):
     """Creates a Dataset object for every dataset available in the `datasets_configs` list.
     The argument `load_numeric` informs wether we should load numeric attributes or not.
 
-    :param datasets_configs: (list of dicts) dataset configurations to be loaded.
-    :param load_numeric: (bool, optional) wether to load numeric attributes. Defaults to `False`.
+    :param datasets_configs: dataset configurations to be loaded.
+    :type datasets_configs: list[dict[str, str or int or None]]
+    :param bool load_numeric: wether to load numeric attributes. Defaults to `False`.
     :return: List of tuples (dataset_name, Dataset object).
+    :rtype: list[tuple(str, dataset.Dataset)]
     """
     datasets_list = []
     for dataset_config in datasets_configs:
