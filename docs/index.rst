@@ -11,7 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   overview
+   program_specification
+   program_project
    manual
    dataset
    criteria
