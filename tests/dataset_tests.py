@@ -110,5 +110,47 @@ class TestTrainDataset1WithoutNumeric(unittest.TestCase):
         self.assertEqual(self.data.number_samples_in_rarest_class, 5)
 
 
+class TestTrainDataset1WithoutNumeric(unittest.TestCase):
+    def setUp(self):
+        # TODO: load test set.
+        self.config = dataset.load_config(os.path.join(
+            '.', 'data', 'train_dataset1'))
+        self.data = dataset.Dataset(self.config["filepath"],
+                                    self.config["key attrib index"],
+                                    self.config["class attrib index"],
+                                    self.config["split char"],
+                                    self.config["missing value string"],
+                                    load_numeric=True)
+
+    def test_valid_attribs(self):
+        self.assertEqual(self.data.valid_nominal_attribute, [True, True, False, False])
+        self.assertEqual(self.data.valid_numeric_attribute, [False, False, True, False])
+        self.assertEqual(self.data.load_numeric, True)
+
+    def test_num_samples(self):
+        self.assertEqual(self.data.num_samples, 10)
+
+    def test_num_classes(self):
+        self.assertEqual(self.data.num_classes, 2)
+
+    def test_samples_classes(self):
+        self.assertEqual(self.data.sample_class, [0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+
+    def test_key_attrib_index(self):
+        assert self.data.key_attrib_index is None
+
+    def test_class_attrib_index(self):
+        self.assertEqual(self.data.class_attrib_index, -1)
+
+    def test_attrib_names(self):
+        self.assertEqual(self.data.attrib_names,
+                         ['nominal_attrib1', 'nominal_attrib2', 'numeric_attrib', 'class'])
+
+    def test_class_index_num_samples(self):
+        self.assertEqual(self.data.class_index_num_samples, [5, 5])
+
+    def test_num_samples_rarest_class(self):
+        self.assertEqual(self.data.number_samples_in_rarest_class, 5)
+
 if __name__ == '__main__':
     unittest.main()

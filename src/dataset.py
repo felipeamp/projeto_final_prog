@@ -112,7 +112,6 @@ class Dataset(object):
         self.load_numeric = load_numeric
 
         self._load_train_dataset(split_char, missing_value_string)
-        self._print_loaded_information()
 
     def _load_train_dataset(self, split_char, missing_value_string):
         """Loads the CSV and initialize auxiliary data.
@@ -283,23 +282,6 @@ class Dataset(object):
             sample_costs[-1][curr_sample_class] = 0.0
         return sample_costs
 
-    def _print_loaded_information(self):
-        """Prints basic information of the loaded CSV.
-        """
-        print('Number of attributes: {}'.format(
-            sum(self.valid_nominal_attribute) + sum(self.valid_numeric_attribute)))
-        print('Number of nominal attributes: {}'.format(sum(self.valid_nominal_attribute)))
-        print('Number of numeric attributes: {}'.format(sum(self.valid_numeric_attribute)))
-        print('{} samples found!'.format(self.num_samples))
-        print('{} classes found:'.format(self.num_classes))
-        for class_index in range(self.num_classes):
-            print('\tClass # {}: "{}" ({} samples)'.format(
-                class_index,
-                self.class_int_to_name[class_index],
-                self.class_index_num_samples[class_index]))
-        print('Time taken to load training dataset: {:.6f}s'.format(
-            self.load_train_dataset_time_taken))
-
     def load_test_set_from_csv(self, test_dataset_csv_filepath, key_attrib_index,
                                class_attrib_index, split_char, missing_value_string):
         """Loads the CSV and initializes auxiliary data.
@@ -451,137 +433,6 @@ class Dataset(object):
         print('Time taken to load test dataset: {:.6f}s'.format(time_taken))
         self.test_num_samples = len(self.test_sample_index_to_key)
         self.test_dataset_csv_filepath = test_dataset_csv_filepath
-
-    def _print_debug_info(self):
-        # TESTED!
-        print()
-        print('DEBUG INFO:')
-        print()
-        print()
-
-        print('self.attrib_names:')
-        for int_key, attrib_name in enumerate(self.attrib_names):
-            print('\t{} --> {}'.format(int_key, attrib_name))
-        print()
-
-        print('self.num_samples: {}'.format(self.num_samples))
-        print()
-
-        print('self.num_classes: {}'.format(self.num_classes))
-        print()
-
-        print('self.sample_index_to_key:')
-        for int_key, key in enumerate(self.sample_index_to_key):
-            print('\t{} --> {}'.format(int_key, key))
-        print()
-
-        print('self.sample_key_to_index:')
-        for key, int_key in self.sample_key_to_index.items():
-            print('\t{} --> {}'.format(key, int_key))
-        print()
-
-        print('self.samples:')
-        for int_key, sample in enumerate(self.samples):
-            print('\tSample # {}:'.format(int_key))
-            for attrib_index, int_value in enumerate(sample):
-                print('\t\t{} --> {}'.format(attrib_index, int_value))
-        print()
-
-        print('self.sample_class:')
-        for int_key, sample_class in enumerate(self.sample_class):
-            print('\t{} --> {}'.format(int_key, sample_class))
-        print()
-
-        print('self.sample_costs:')
-        for int_key, cost_array in enumerate(self.sample_costs):
-            print('\tSample # {}:'.format(int_key))
-            for class_int, cost in enumerate(cost_array):
-                print('\t\t{} --> {}'.format(class_int, cost))
-        print()
-
-        print('self.test_sample_index_to_key:')
-        for int_key, key in enumerate(self.test_sample_index_to_key):
-            print('\t{} --> {}'.format(int_key, key))
-        print()
-
-        print('self.test_sample_key_to_index:')
-        for key, int_key in self.test_sample_key_to_index.items():
-            print('\t{} --> {}'.format(key, int_key))
-        print()
-
-        print('self.test_samples:')
-        for int_key, sample in enumerate(self.test_samples):
-            print('\t{} --> {}'.format(int_key, sample))
-        print()
-
-        print('self.test_sample_class:')
-        for int_key, sample_class in enumerate(self.test_sample_class):
-            print('\t{} --> {}'.format(int_key, sample_class))
-        print()
-
-        print('self.test_sample_costs:')
-        for int_key, cost_array in enumerate(self.test_sample_costs):
-            print('\tTest Sample # {}:'.format(int_key))
-            for class_int, cost in enumerate(cost_array):
-                print('\t\t{} --> {}'.format(class_int, cost))
-        print()
-
-        print('self.test_dataset_csv_filepath: {}'.format(self.test_dataset_csv_filepath))
-        print()
-
-        print('self.valid_nominal_attribute:')
-        for attrib_index, is_valid in enumerate(self.valid_nominal_attribute):
-            print('\t{} --> {}'.format(attrib_index, is_valid))
-        print()
-
-        print('self.valid_numeric_attribute:')
-        for attrib_index, is_valid in enumerate(self.valid_numeric_attribute):
-            print('\t{} --> {}'.format(attrib_index, is_valid))
-        print()
-
-        print('self.attrib_int_to_value:')
-        for attrib_index, int_to_values_array in enumerate(self.attrib_int_to_value):
-            print('\tAtribute # {}:'.format(attrib_index))
-            for value_int, value in enumerate(int_to_values_array):
-                print('\t\t{} --> {}'.format(value_int, value))
-        print()
-
-        print('self.attrib_value_to_int:')
-        for attrib_index, values_to_int_array in enumerate(self.attrib_value_to_int):
-            print('\tAtribute # {}:'.format(attrib_index))
-            for value, value_int in enumerate(values_to_int_array):
-                print('\t\t{} --> {}'.format(value, value_int))
-        print()
-
-        print('self.number_samples_in_rarest_class: {}'.format(self.number_samples_in_rarest_class))
-        print()
-
-        print('self.training_dataset_csv_filepath: {}'.format(self.training_dataset_csv_filepath))
-        print()
-
-        print('self.key_attrib_index: {}'.format(self.key_attrib_index))
-        print()
-
-        print('self.class_attrib_index: {}'.format(self.class_attrib_index))
-        print()
-
-        print('self.load_train_dataset_time_taken: {}'.format(self.load_train_dataset_time_taken))
-        print()
-
-        print('self.class_int_to_name:')
-        for class_int, class_name in enumerate(self.class_int_to_name):
-            print('\t{} --> {}'.format(class_int, class_name))
-        print()
-
-        print('self.class_name_to_int:')
-        for class_name, class_int in self.class_name_to_int.items():
-            print('\t{} --> {}'.format(class_name, class_int))
-        print()
-
-        print('self.class_index_num_samples:')
-        for class_int, num_samples in enumerate(self.class_index_num_samples):
-            print('\t{} --> {}'.format(class_int, num_samples))
-        print()
 
 
 def load_config(folderpath):
