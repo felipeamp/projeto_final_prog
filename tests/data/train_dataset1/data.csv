@@ -1,0 +1,12 @@
+nominal_attrib1,nominal_attrib2,numeric_attrib,class
+a,a,10.5,1
+a,a,5.5,1
+a,b,10,1
+a,b,8.0,1
+a,b,9.75,1
+b,a,4.5,0
+b,a,2,0
+b,a,-1,0
+b,b,0,0
+b,b,3.5,0
+a,?,7,0

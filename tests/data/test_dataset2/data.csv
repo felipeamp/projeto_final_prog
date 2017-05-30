@@ -1,0 +1,11 @@
+key,nominal_attrib1,nominal_attrib2,numeric_attrib,class
+11,a,a,10.5,1
+12,d,a,5.5,1
+13,a,b,10,1
+14,b,a,8.0,2
+15,d,a,9.75,2
+16,b,b,4.5,2
+17,c,a,2,0
+18,c,a,-1,0
+19,e,b,0,3
+20,c,b,3.5,3

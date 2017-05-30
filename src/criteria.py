@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 # Copyright Felipe de Albuquerque Mello Pereira 2017
 
-"""Module containing all criteria available for tests.
-
-
+"""
+Module containing all criteria available for splitting.
 """
 
 import abc

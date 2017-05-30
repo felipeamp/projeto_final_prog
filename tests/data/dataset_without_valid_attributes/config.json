@@ -1,0 +1,7 @@
+{
+    "dataset name": "Without Valid Attributes",
+    "key attrib index": 0,
+    "class attrib index": -1,
+    "split char": ",",
+    "missing value string": "?"
+}

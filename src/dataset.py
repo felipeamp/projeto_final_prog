@@ -126,7 +126,7 @@ class Dataset(object):
         print('LOADING dataset...')
         if self.class_attrib_index is None:
             print('Error: No class attribute!')
-            sys.exit(1)
+            raise ValueError
         if self.key_attrib_index is None:
             print('No key attribute used! Numbering samples in order of appearance.')
         samples_counter = -1 # header is 0, first sample is 1
@@ -181,13 +181,13 @@ class Dataset(object):
                               '({}) is equal or larger than the number of attributes ({}).'.format(
                                   self.key_attrib_index,
                                   len(line_list)))
-                        sys.exit(1)
+                        raise ValueError
                 else:
                     sample_name_index = samples_counter - 1
                     key = 'sample_{}'.format(sample_name_index)
                 if key in self.sample_key_to_index:
                     print('Repeated key: {}'.format(key))
-                    sys.exit(1)
+                    raise ValueError
 
                 # Class
                 try:
@@ -197,7 +197,7 @@ class Dataset(object):
                           '({}) is equal or larger than the number of attributes ({}).'.format(
                               self.class_attrib_index,
                               len(line_list)))
-                    sys.exit(1)
+                    raise ValueError
                 if sample_class_name in self.class_name_to_int:
                     sample_int_class = self.class_name_to_int[sample_class_name]
                 else:
@@ -272,7 +272,7 @@ class Dataset(object):
                 or (sum(self.valid_nominal_attribute) == 0
                     and sum(self.valid_numeric_attribute) == 0)):
             print('Must have at least ONE valid attribute.')
-            sys.exit(1)
+            raise ValueError
 
     def _initialize_integer_costs(self, sample_class):
         """Initialize costs for each sample (1.0 for wrong class and 0.0 for the correct one).
@@ -336,13 +336,13 @@ class Dataset(object):
             print('Test dataset key attribute ({}) is not equal to train'
                   ' dataset key attribute ({}).'.format(key_attrib_index,
                                                         self.key_attrib_index))
-            sys.exit(1)
+            raise ValueError
 
         if class_attrib_index != self.class_attrib_index:
             print('Test dataset class attribute ({}) is not equal to train'
                   ' dataset class attribute ({}).'.format(class_attrib_index,
                                                           self.class_attrib_index))
-            sys.exit(1)
+            raise ValueError
 
         samples_counter = -1 # header is 0, first sample is 1
         wrong_samples = 0
@@ -358,7 +358,7 @@ class Dataset(object):
                     # header
                     if not _is_header_match(self.attrib_names, line_list):
                         print('Test dataset header is not equal to train dataset header.')
-                        sys.exit(1)
+                        raise ValueError
                     continue
 
                 # not header
@@ -385,7 +385,7 @@ class Dataset(object):
                     key = 'test_sample_{}'.format(sample_name_index)
                 if key in self.test_sample_key_to_index:
                     print('Repeated key: {}'.format(key))
-                    sys.exit(1)
+                    raise ValueError
 
                 # Class
                 sample_class_name = line_list[class_attrib_index]
@@ -408,7 +408,7 @@ class Dataset(object):
                                                                 value,
                                                                 attrib_index,
                                                                 self.attrib_names[attrib_index]))
-                            sys.exit(1)
+                            raise ValueError
                         except ValueError:
                             if value == missing_value_string:
                                 print('\tTest sample {} has missing value in attribute'
@@ -438,7 +438,7 @@ class Dataset(object):
                                                                 value,
                                                                 attrib_index,
                                                                 self.attrib_names[attrib_index]))
-                            sys.exit(1)
+                            raise ValueError
 
                 # Save this sample in test dataset
                 self.test_samples.append(sample)
