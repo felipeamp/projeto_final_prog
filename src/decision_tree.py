@@ -23,7 +23,7 @@ MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE = 40
 
 #: Use the minimum number of samples in the two most frequent classes as a criteria to allow a split
 #: or not.
-USE_MIN_SAMPLES_SECOND_LARGEST_CLASS = True
+USE_MIN_SAMPLES_SECOND_LARGEST_CLASS = False
 #: Minimum number of samples needed in the two most frequent classes such that this node can be
 #: split.
 MIN_SAMPLES_SECOND_LARGEST_CLASS = 40
@@ -60,7 +60,7 @@ class DecisionTree(object):
     def get_trivial_accuracy(self, test_samples_indices):
         """
         Gets the accuracy obtained by classifying every test samples in the most common class
-        among training samples. Must be called after training the tree.
+        among training samples. MUST be called after training the tree.
 
         :param test_samples_indices: indices of samples to be tested.
         :type test_samples_indices: list[int]
@@ -169,7 +169,7 @@ class DecisionTree(object):
             accepted when doing chi-square tests (that is, when `use_stop_conditions` is `True`).A
             p-value of 1.0 is equal to 100%. Defaults to `0.1` (which is 10%).
         :return: tuple containing the time spent pruning the trained tree and the number of nodes
-            prunned.
+            pruned.
         :rtype: tuple(float, int)
         """
         self._curr_dataset = curr_dataset
@@ -185,10 +185,10 @@ class DecisionTree(object):
         self._root_node.create_subtree(self._criterion)
         print('Starting pruning trivial subtrees...')
         start_time = timeit.default_timer()
-        num_nodes_prunned = self._root_node.prune_trivial_subtrees()
+        num_nodes_pruned = self._root_node.prune_trivial_subtrees()
         time_taken_pruning = timeit.default_timer() - start_time
         print('Done!')
-        return time_taken_pruning, num_nodes_prunned
+        return time_taken_pruning, num_nodes_pruned
 
     def train_and_test(self, curr_dataset, training_samples_indices, validation_sample_indices,
                        max_depth, min_samples_per_node, use_stop_conditions=False,
@@ -224,7 +224,7 @@ class DecisionTree(object):
             accepted when doing chi-square tests (that is, when `use_stop_conditions` is `True`). A
             p-value of 1.0 is equal to 100%. Defaults to `0.1` (which is 10%).
         :return: A tuple containing the tree's max depth in the second entry, the time taken
-            pruning in the third entry and the number of nodes prunned in the fourth entry. In the
+            pruning in the third entry and the number of nodes pruned in the fourth entry. In the
             first entry it returns another tuple containing, in order:
 
             * a list of predicted class for each validation sample;
@@ -246,21 +246,17 @@ class DecisionTree(object):
         :rtype: tuple(tuple(list[int], int, int, float, float, list[bool], int, list[int]), int,
             float, int)
         """
-        time_taken_pruning, num_nodes_prunned = self.train(curr_dataset,
+        time_taken_pruning, num_nodes_pruned = self.train(curr_dataset,
                                                            training_samples_indices,
                                                            max_depth,
                                                            min_samples_per_node,
                                                            use_stop_conditions,
                                                            max_p_value_chi_sq)
         max_depth = self.get_root_node().get_max_depth()
-        return (self._classify_samples(self._curr_dataset.samples,
-                                       self._curr_dataset.sample_class,
-                                       self._curr_dataset.sample_costs,
-                                       validation_sample_indices,
-                                       self._curr_dataset.sample_index_to_key),
+        return (self.test(validation_sample_indices),
                 max_depth,
                 time_taken_pruning,
-                num_nodes_prunned)
+                num_nodes_pruned)
 
 
     def cross_validate(self, curr_dataset, num_folds, max_depth, min_samples_per_node,
@@ -317,7 +313,7 @@ class DecisionTree(object):
             * list where the i-th entry has the attribute index used for classification of the i-th
               sample when an unkown value occurred;
             * list containing the time spent pruning in each fold;
-            * list containing the number of nodes prunned in each fold;
+            * list containing the number of nodes pruned in each fold;
             * list containing the maximum tree depth for each fold;
             * list containing the number of nodes per fold, after pruning;
             * list containing the number of valid attributes in root node in each fold;
@@ -341,7 +337,7 @@ class DecisionTree(object):
         num_values_root_attribute_list = []
         num_trivial_splits = 0
         time_taken_pruning_per_fold = []
-        num_nodes_prunned_per_fold = []
+        num_nodes_pruned_per_fold = []
         num_correct_trivial_classifications = 0
 
         fold_count = 0
@@ -379,7 +375,7 @@ class DecisionTree(object):
                   curr_unkown_value_attrib_index_array),
                  curr_max_depth,
                  curr_time_taken_pruning,
-                 curr_num_nodes_prunned) = self.train_and_test(curr_dataset,
+                 curr_num_nodes_pruned) = self.train_and_test(curr_dataset,
                                                                training_samples_indices,
                                                                validation_sample_indices,
                                                                max_depth,
@@ -416,7 +412,7 @@ class DecisionTree(object):
 
                 fold_count += 1
                 time_taken_pruning_per_fold.append(curr_time_taken_pruning)
-                num_nodes_prunned_per_fold.append(curr_num_nodes_prunned)
+                num_nodes_pruned_per_fold.append(curr_num_nodes_pruned)
 
                 if print_tree:
                     print()
@@ -438,7 +434,7 @@ class DecisionTree(object):
                   curr_unkown_value_attrib_index_array),
                  curr_max_depth,
                  curr_time_taken_pruning,
-                 curr_num_nodes_prunned) = self.train_and_test(curr_dataset,
+                 curr_num_nodes_pruned) = self.train_and_test(curr_dataset,
                                                                training_samples_indices,
                                                                validation_sample_indices,
                                                                max_depth,
@@ -475,7 +471,7 @@ class DecisionTree(object):
 
                 fold_count += 1
                 time_taken_pruning_per_fold.append(curr_time_taken_pruning)
-                num_nodes_prunned_per_fold.append(curr_num_nodes_prunned)
+                num_nodes_pruned_per_fold.append(curr_num_nodes_pruned)
 
                 if print_tree:
                     print()
@@ -492,7 +488,7 @@ class DecisionTree(object):
                  num_unkown,
                  unkown_value_attrib_index_array,
                  time_taken_pruning_per_fold,
-                 num_nodes_prunned_per_fold,
+                 num_nodes_pruned_per_fold,
                  max_depth_per_fold,
                  num_nodes_per_fold,
                  num_valid_nominal_attributes_in_root_per_fold,
@@ -588,7 +584,7 @@ class DecisionTree(object):
                                       list(range(len(self._curr_dataset.test_sample_index_to_key))),
                                       self._curr_dataset.test_sample_index_to_key)
 
-    def save_tree(self, filepath=None):
+    def save_tree(self, filepath=None): # pragma: no cover
         """
         Saves the tree information: nodes, attributes used to split each one, values to each side,
         etc.
@@ -712,7 +708,6 @@ class TreeNode(object):
         # Note that self.valid_nominal_attribute might be different from
         # self.curr_dataset.valid_nominal_attribute when use_stop_conditions == True.
         self.valid_nominal_attribute = valid_nominal_attribute
-        self.num_valid_nominal_attributes_diff = None
 
         self.num_valid_samples = len(valid_samples_indices)
         self.class_index_num_samples = [0] * curr_dataset.num_classes
@@ -720,8 +715,9 @@ class TreeNode(object):
         for sample_index in valid_samples_indices:
             self.class_index_num_samples[
                 curr_dataset.sample_class[sample_index]] += 1
-        number_non_empty_classes = sum(num_samples_curr_class > 0
-                                       for num_samples_curr_class in self.class_index_num_samples)
+        self.number_non_empty_classes = sum(num_samples_curr_class > 0
+                                            for num_samples_curr_class
+                                            in self.class_index_num_samples)
         self.most_common_int_class = self.class_index_num_samples.index(
             max(self.class_index_num_samples))
 
@@ -942,29 +938,29 @@ class TreeNode(object):
 
     def prune_trivial_subtrees(self):
         """
-        Applies pruning to an already trained tree. Returns the number of prunned nodes.
+        Applies pruning to an already trained tree. Returns the number of pruned nodes.
 
         If a TreeNode is trivial, that is, every leaf in its subtree has the same
         `most_common_int_class`, then the current TreeNode becomes a leaf with this class, deleting
         every child node in this process. It is applied recursively.
 
-        :return: number of nodes prunned.
+        :return: number of nodes pruned.
         :rtype: int
         """
-        num_prunned = 0
+        num_pruned = 0
         if not self.is_leaf:
             children_classes = set()
             num_trivial_children = 0
             for child_node in self.nodes:
-                num_prunned += child_node.prune_trivial_subtrees()
+                num_pruned += child_node.prune_trivial_subtrees()
                 if child_node.is_leaf:
                     num_trivial_children += 1
                     children_classes.add(child_node.most_common_int_class)
             if num_trivial_children == len(self.nodes) and len(children_classes) == 1:
                 self.is_leaf = True
-                num_prunned += num_trivial_children
+                num_pruned += num_trivial_children
                 self.nodes = []
-        return num_prunned
+        return num_pruned
 
     def get_num_nodes(self):
         """

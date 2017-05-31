@@ -6,7 +6,7 @@
 This module contains only the Dataset class.
 """
 
-import copy
+
 import json
 import os
 import sys
@@ -206,7 +206,7 @@ class Dataset(object):
                     self.class_index_num_samples.append(0)
 
                 # Sample and attributes
-                sample = copy.copy(line_list)
+                sample = line_list[:]
                 is_correct = True
                 for attrib_index, value in enumerate(line_list):
                     if self.valid_nominal_attribute[attrib_index]:
@@ -279,7 +279,8 @@ class Dataset(object):
         sample_costs = []
         for curr_sample_class in sample_class:
             sample_costs.append([1.0] * self.num_classes)
-            sample_costs[-1][curr_sample_class] = 0.0
+            if curr_sample_class < self.num_classes:
+                sample_costs[-1][curr_sample_class] = 0.0
         return sample_costs
 
     def load_test_set_from_csv(self, test_dataset_csv_filepath, key_attrib_index,
@@ -379,7 +380,7 @@ class Dataset(object):
                     self.class_int_to_name.append(sample_class_name)
 
                 # Sample and attributes
-                sample = copy.copy(line_list)
+                sample = line_list[:]
                 for attrib_index, value in enumerate(line_list):
                     if self.valid_nominal_attribute[attrib_index]:
                         try:
