@@ -82,18 +82,34 @@ class DecisionTree(object):
         while not curr_node.is_leaf:
             split_attrib_index = curr_node.node_split.separation_attrib_index
             sample_value = sample[split_attrib_index]
-            try:
-                split_index = curr_node.node_split.values_to_split[sample_value]
-                curr_node = curr_node.nodes[split_index]
-            except KeyError:
-                print('\tSample {} has value unkown to split'
-                      ' (value = {} in attrib #{}).'.format(
-                          sample_key,
-                          sample_value,
-                          curr_node.node_split.separation_attrib_index))
-                classified_with_unkown_value = True
-                unkown_value_attrib_index = curr_node.node_split.separation_attrib_index
-                break
+            if self._curr_dataset.valid_numeric_attribute[split_attrib_index]:
+                if sample_value is None:
+                    print('\tSample {} has value unkown to split'
+                          ' (value = {} in attrib #{}).'.format(
+                              sample_key,
+                              sample_value,
+                              curr_node.node_split.separation_attrib_index))
+                    classified_with_unkown_value = True
+                    unkown_value_attrib_index = curr_node.node_split.separation_attrib_index
+                    break
+                mid_point = curr_node.node_split.mid_point
+                if sample_value <= mid_point:
+                    curr_node = curr_node.nodes[0]
+                else:
+                    curr_node = curr_node.nodes[1]
+            else:
+                try:
+                    split_index = curr_node.node_split.values_to_split[sample_value]
+                    curr_node = curr_node.nodes[split_index]
+                except KeyError:
+                    print('\tSample {} has value unkown to split'
+                          ' (value = {} in attrib #{}).'.format(
+                              sample_key,
+                              sample_value,
+                              curr_node.node_split.separation_attrib_index))
+                    classified_with_unkown_value = True
+                    unkown_value_attrib_index = curr_node.node_split.separation_attrib_index
+                    break
         return (curr_node.most_common_int_class,
                 classified_with_unkown_value,
                 unkown_value_attrib_index)
@@ -178,6 +194,7 @@ class DecisionTree(object):
             curr_dataset,
             training_samples_indices,
             curr_dataset.valid_nominal_attribute[:],
+            curr_dataset.valid_numeric_attribute[:],
             max_depth,
             min_samples_per_node,
             use_stop_conditions,
@@ -247,11 +264,11 @@ class DecisionTree(object):
             float, int)
         """
         time_taken_pruning, num_nodes_pruned = self.train(curr_dataset,
-                                                           training_samples_indices,
-                                                           max_depth,
-                                                           min_samples_per_node,
-                                                           use_stop_conditions,
-                                                           max_p_value_chi_sq)
+                                                          training_samples_indices,
+                                                          max_depth,
+                                                          min_samples_per_node,
+                                                          use_stop_conditions,
+                                                          max_p_value_chi_sq)
         max_depth = self.get_root_node().get_max_depth()
         return (self.test(validation_sample_indices),
                 max_depth,
@@ -376,12 +393,12 @@ class DecisionTree(object):
                  curr_max_depth,
                  curr_time_taken_pruning,
                  curr_num_nodes_pruned) = self.train_and_test(curr_dataset,
-                                                               training_samples_indices,
-                                                               validation_sample_indices,
-                                                               max_depth,
-                                                               min_samples_per_node,
-                                                               use_stop_conditions,
-                                                               max_p_value_chi_sq)
+                                                              training_samples_indices,
+                                                              validation_sample_indices,
+                                                              max_depth,
+                                                              min_samples_per_node,
+                                                              use_stop_conditions,
+                                                              max_p_value_chi_sq)
                 max_depth_per_fold.append(curr_max_depth)
                 num_nodes_per_fold.append(self.get_root_node().get_num_nodes())
                 num_valid_nominal_attributes_in_root_per_fold.append(
@@ -435,12 +452,12 @@ class DecisionTree(object):
                  curr_max_depth,
                  curr_time_taken_pruning,
                  curr_num_nodes_pruned) = self.train_and_test(curr_dataset,
-                                                               training_samples_indices,
-                                                               validation_sample_indices,
-                                                               max_depth,
-                                                               min_samples_per_node,
-                                                               use_stop_conditions,
-                                                               max_p_value_chi_sq)
+                                                              training_samples_indices,
+                                                              validation_sample_indices,
+                                                              max_depth,
+                                                              min_samples_per_node,
+                                                              use_stop_conditions,
+                                                              max_p_value_chi_sq)
                 max_depth_per_fold.append(curr_max_depth)
                 num_nodes_per_fold.append(self.get_root_node().get_num_nodes())
                 num_valid_nominal_attributes_in_root_per_fold.append(
@@ -602,6 +619,12 @@ class DecisionTree(object):
             ret_string += '{} in {}:'.format(attrib_name, string_values)
             return ret_string
 
+        def _aux_print_numeric_string(attrib_name, mid_point, inequality, curr_depth):
+            # TESTED!
+            ret_string = '|' * curr_depth
+            ret_string += '{} {} {}:'.format(attrib_name, inequality, mid_point)
+            return ret_string
+
         def _aux_print_split(file_object, tree_node, curr_depth):
             # TESTED!
             if tree_node.is_leaf:
@@ -612,16 +635,27 @@ class DecisionTree(object):
             else:
                 attrib_index = tree_node.node_split.separation_attrib_index
                 attrib_name = self._curr_dataset.attrib_names[attrib_index]
-                for split_values, child_node in zip(tree_node.node_split.splits_values,
-                                                    tree_node.nodes):
-                    curr_string_values = sorted(
-                        [self._curr_dataset.attrib_int_to_value[attrib_index][int_value]
-                         for int_value in split_values])
-                    print(_aux_print_nominal_string(attrib_name,
-                                                    curr_string_values,
-                                                    curr_depth),
+                mid_point = tree_node.node_split.mid_point
+                if mid_point is not None:
+                    # <= mid_point, go left
+                    print(_aux_print_numeric_string(attrib_name, mid_point, '<=', curr_depth),
                           file=file_object)
-                    _aux_print_split(file_object, child_node, curr_depth + 1)
+                    _aux_print_split(file_object, tree_node.nodes[0], curr_depth + 1)
+                    # > mid_point, go right
+                    print(_aux_print_numeric_string(attrib_name, mid_point, '>', curr_depth),
+                          file=file_object)
+                    _aux_print_split(file_object, tree_node.nodes[1], curr_depth + 1)
+                else:
+                    for split_values, child_node in zip(tree_node.node_split.splits_values,
+                                                        tree_node.nodes):
+                        curr_string_values = sorted(
+                            [self._curr_dataset.attrib_int_to_value[attrib_index][int_value]
+                             for int_value in split_values])
+                        print(_aux_print_nominal_string(attrib_name,
+                                                        curr_string_values,
+                                                        curr_depth),
+                              file=file_object)
+                        _aux_print_split(file_object, child_node, curr_depth + 1)
 
         if filepath is None:
             _aux_print_split(sys.stdout, self._root_node, curr_depth=0)
@@ -642,7 +676,10 @@ class TreeNode(object):
     :type valid_samples_indices: list[int]
     :param valid_nominal_attribute: the i-th entry informs wether the i-th attribute is a valid
         nominal one.
-    :type valid_samples_indices: list[bool]
+    :type valid_nominal_attribute: list[bool]
+    :param valid_numeric_attribute: the i-th entry informs wether the i-th attribute is a valid
+        numeric one.
+    :type valid_numeric_attribute: list[bool]
     :param int max_depth_remaining: maximum depth that the subtree rooted at this node can have. If
         zero, this node will be a leaf.
     :param int min_samples_per_node: minimum number of samples that must be present in order to try
@@ -663,9 +700,9 @@ class TreeNode(object):
     :ivar bool is_leaf: True: indicates if the current TreeNode is a tree leaf.
     :ivar int max_depth_remaining: maximum depth that the subtree rooted at the current TreeNode can
         still grow. If zero, the current TreeNode will be a leaf.
-    :ivar node_split: None: Data structure containing information about which attribute and split values
-        were obtained in this TreeNode with a certain criterion. Also contains the criterion value.
-        It is `None` if the current TreeNode is a leaf.
+    :ivar node_split: None: Data structure containing information about which attribute and split
+        values were obtained in this TreeNode with a certain criterion. Also contains the criterion
+        value. It is `None` if the current TreeNode is a leaf.
     :vartype node_split: decision_tree.NodeSplit or None.
     :ivar nodes: []: list containing every child TreeNode from the current TreeNode.
     :vartype nodes: list[decision_tree.TreeNode]
@@ -682,6 +719,9 @@ class TreeNode(object):
     :ivar valid_nominal_attribute: list where the i-th entry indicates wether the i-th attribute
         from the dataset is valid and nominal or not.
     :vartype valid_nominal_attribute: list[bool]
+    :ivar valid_numeric_attribute: list where the i-th entry indicates wether the i-th attribute
+        from the dataset is valid and numeric or not.
+    :vartype valid_numeric_attribute: list[bool]
     :vartype int num_valid_samples: number of training samples in this TreeNode.
     :vartype class_index_num_samples: list where the i-th entry indicates the number of samples
         having class i.
@@ -690,8 +730,8 @@ class TreeNode(object):
     :vartype int number_non_empty_classes: number of classes having no sample in this TreeNode.
     """
     def __init__(self, curr_dataset, valid_samples_indices, valid_nominal_attribute,
-                 max_depth_remaining, min_samples_per_node, use_stop_conditions=False,
-                 max_p_value_chi_sq=0.1):
+                 valid_numeric_attribute, max_depth_remaining, min_samples_per_node,
+                 use_stop_conditions=False, max_p_value_chi_sq=0.1):
         self._use_stop_conditions = use_stop_conditions
         self._max_p_value_chi_sq = max_p_value_chi_sq
 
@@ -708,6 +748,7 @@ class TreeNode(object):
         # Note that self.valid_nominal_attribute might be different from
         # self.curr_dataset.valid_nominal_attribute when use_stop_conditions == True.
         self.valid_nominal_attribute = valid_nominal_attribute
+        self.valid_numeric_attribute = valid_numeric_attribute
 
         self.num_valid_samples = len(valid_samples_indices)
         self.class_index_num_samples = [0] * curr_dataset.num_classes
@@ -824,8 +865,29 @@ class TreeNode(object):
                     sys.exit(1)
             return splits_samples_indices
 
+        def _get_numeric_splits_samples_indices(separation_attrib_index, mid_point,
+                                                valid_samples_indices, samples):
+            splits_samples_indices = [[], []]
+            for sample_index in valid_samples_indices:
+                sample_value_in_split_attrib = samples[sample_index][separation_attrib_index]
+                if sample_value_in_split_attrib <= mid_point:
+                    splits_samples_indices[0].append(sample_index)
+                else:
+                    splits_samples_indices[1].append(sample_index)
+            return splits_samples_indices
+
         def _has_multiple_nominal_values(values_num_samples):
             return sum(num_samples > 0 for num_samples in values_num_samples) > 1
+
+        def _has_multiple_numeric_values(valid_samples_indices, sample, attrib_index):
+            values_seen = set()
+            for sample_index in valid_samples_indices:
+                sample_value = sample[sample_index][attrib_index]
+                if sample_value not in values_seen:
+                    if values_seen:
+                        return True
+                    values_seen.add(sample_value)
+            return False
 
         def _has_enough_samples_in_second_largest_class(class_index_num_samples,
                                                         most_common_int_class):
@@ -856,12 +918,23 @@ class TreeNode(object):
             else:
                 num_valid_nominal_attributes += 1
 
+        num_valid_numeric_attributes = 0
+        for attrib_index in range(len(self.valid_numeric_attribute)):
+            if not self.valid_numeric_attribute[attrib_index]:
+                continue
+            if not _has_multiple_numeric_values(self.valid_samples_indices,
+                                                self.curr_dataset.samples,
+                                                attrib_index):
+                self.valid_numeric_attribute[attrib_index] = False
+            else:
+                num_valid_numeric_attributes += 1
+
         # If there are no valid attributes, this node should be a leaf.
-        if not num_valid_nominal_attributes:
+        if not num_valid_nominal_attributes and not num_valid_numeric_attributes:
             return None
 
         if self._use_stop_conditions:
-            num_valid_nominal_attributes = 0
+            num_valid_attributes = sum(self.curr_dataset.valid_numeric_attribute)
             # Attributes which are valid (`True`) in `new_valid_nominal_attribute` and invalid
             # (`False`) in `new_valid_nominal_attribute_incl_chi_sq_test` should not be used to
             # split at this node, but could be used to split in descendant nodes.
@@ -875,14 +948,14 @@ class TreeNode(object):
                          attrib_index,
                          min_allowed_in_two_largest=MIN_SAMPLES_IN_SECOND_MOST_FREQUENT_VALUE))
                     if is_valid_chi_sq_and_num_samples:
-                        num_valid_nominal_attributes += 1
+                        num_valid_attributes += 1
                     elif is_valid_num_samples:
                         new_valid_nominal_attribute_incl_chi_sq_test[attrib_index] = False
                     else:
                         new_valid_nominal_attribute[attrib_index] = False
                         new_valid_nominal_attribute_incl_chi_sq_test[attrib_index] = False
             self.valid_nominal_attribute = new_valid_nominal_attribute_incl_chi_sq_test
-            if num_valid_nominal_attributes == 0:
+            if num_valid_attributes == 0:
                 return None
 
         # Get best split. Note that self is the current TreeNode.
@@ -893,17 +966,35 @@ class TreeNode(object):
             # best_split.criterion_value is default, which is +- inf).
             return None
 
-        # Calculate a list containing the inverse information of best_split.splits_values: here,
-        # given a value, we want to know to which split it belongs
-        values_to_split = _get_values_to_split(best_split.splits_values)
+        if self.curr_dataset.valid_numeric_attribute[best_split.attrib_index]:
+            # NUMERIC ATTRIBUTE
+            last_left_value = list(best_split.splits_values[0])[0]
+            first_right_value = list(best_split.splits_values[1])[0]
+            mid_point = 0.5 * (last_left_value + first_right_value)
+            splits_samples_indices = _get_numeric_splits_samples_indices(
+                best_split.attrib_index,
+                mid_point,
+                self.valid_samples_indices,
+                self.curr_dataset.samples)
+            # Save this node's split information.
+            self.node_split = NodeSplit(best_split,
+                                        None,
+                                        mid_point)
 
-        splits_samples_indices = _get_splits_samples_indices(len(best_split.splits_values),
-                                                             best_split.attrib_index,
-                                                             values_to_split,
-                                                             self.valid_samples_indices,
-                                                             self.curr_dataset.samples)
-        # Save this node's split information.
-        self.node_split = NodeSplit(best_split, values_to_split)
+        else:
+            # NOMINAL ATTRIBUTE
+
+            # Calculate a list containing the inverse information of best_split.splits_values: here,
+            # given a value, we want to know to which split it belongs
+            values_to_split = _get_values_to_split(best_split.splits_values)
+
+            splits_samples_indices = _get_splits_samples_indices(len(best_split.splits_values),
+                                                                 best_split.attrib_index,
+                                                                 values_to_split,
+                                                                 self.valid_samples_indices,
+                                                                 self.curr_dataset.samples)
+            # Save this node's split information.
+            self.node_split = NodeSplit(best_split, values_to_split, None)
 
         # Create subtrees
         self.is_leaf = False
@@ -919,6 +1010,7 @@ class TreeNode(object):
             self.nodes.append(TreeNode(self.curr_dataset,
                                        curr_split_samples_indices,
                                        self.valid_nominal_attribute[:],
+                                       self.valid_numeric_attribute[:],
                                        self.max_depth_remaining - 1,
                                        self._min_samples_per_node,
                                        self._use_stop_conditions,
@@ -999,6 +1091,8 @@ class NodeSplit(object):
     :param values_to_split: reversed index for `splits_values`. Given a value, it returns the index
         of the split that this value belongs to.
     :type values_to_split: dict[int, int]
+    :param float mid_point: cut point for numeric splits. Will be the average between the largest
+        value on the left split and the smallest value on the right split.
     :ival int separation_attrib_index: Index of the attribute used for splitting.
     :ival splits_values: list containing a set of attribute values for each TreeNode child. Binary
         splits have two sets (left and right split values), multiway splits may have many more.
@@ -1007,9 +1101,12 @@ class NodeSplit(object):
         of the split that this value belongs to.
     :valtype values_to_split: dict[int, int]
     :ival float criterion_value: criterion value for this split.
+    :ival float mid_point: cut point for numeric splits. Will be the average between the largest
+        value on the left split and the smallest value on the right split.
     """
-    def __init__(self, split, values_to_split):
+    def __init__(self, split, values_to_split, mid_point):
         self.separation_attrib_index = split.attrib_index
         self.splits_values = split.splits_values
         self.values_to_split = values_to_split
         self.criterion_value = split.criterion_value
+        self.mid_point = mid_point

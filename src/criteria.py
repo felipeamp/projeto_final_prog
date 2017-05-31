@@ -67,8 +67,11 @@ class GiniGain(Criterion):
         original_gini = cls._calculate_gini_index(len(tree_node.valid_samples_indices),
                                                   tree_node.class_index_num_samples)
         best_splits_per_attrib = []
-        for attrib_index, is_valid_attrib in enumerate(tree_node.valid_nominal_attribute):
-            if is_valid_attrib:
+        for (attrib_index,
+             (is_valid_nominal_attrib,
+              is_valid_numeric_attrib)) in enumerate(zip(tree_node.valid_nominal_attribute,
+                                                         tree_node.valid_numeric_attribute)):
+            if is_valid_nominal_attrib:
                 values_seen = cls._get_values_seen(
                     tree_node.contingency_tables[attrib_index].values_num_samples)
                 splits_values = [set([value]) for value in values_seen]
@@ -80,11 +83,26 @@ class GiniGain(Criterion):
                 best_splits_per_attrib.append(Split(attrib_index=attrib_index,
                                                     splits_values=splits_values,
                                                     criterion_value=curr_total_gini_gain))
+            elif is_valid_numeric_attrib:
+                values_and_classes = cls._get_numeric_values_seen(
+                    tree_node.valid_samples_indices,
+                    tree_node.curr_dataset.samples,
+                    tree_node.curr_dataset.sample_class,
+                    attrib_index)
+                values_and_classes.sort()
+                (best_children_gini_gain,
+                 last_left_value,
+                 first_right_value) = cls._best_for_numeric(
+                     values_and_classes,
+                     tree_node.curr_dataset.num_classes)
+                curr_total_gini_gain = original_gini - best_children_gini_gain
+                best_splits_per_attrib.append(
+                    Split(attrib_index=attrib_index,
+                          splits_values=[{last_left_value}, {first_right_value}],
+                          criterion_value=curr_total_gini_gain))
         if best_splits_per_attrib:
             return max(best_splits_per_attrib, key=lambda split: split.criterion_value)
-        else:
-            return Split()
-
+        return Split()
 
     @staticmethod
     def _get_values_seen(values_num_samples):
@@ -113,6 +131,60 @@ class GiniGain(Criterion):
                 gini_index -= (curr_class_num_samples / num_samples)**2
         return gini_index
 
+    @staticmethod
+    def _get_numeric_values_seen(valid_samples_indices, sample, sample_class, attrib_index):
+        values_and_classes = []
+        for sample_index in valid_samples_indices:
+            sample_value = sample[sample_index][attrib_index]
+            values_and_classes.append((sample_value, sample_class[sample_index]))
+        return values_and_classes
+
+    @classmethod
+    def _best_for_numeric(cls, sorted_values_and_classes, num_classes):
+        last_left_value = sorted_values_and_classes[0][0]
+        num_left_samples = 1
+        num_right_samples = len(sorted_values_and_classes) - 1
+
+        class_num_left = [0] * num_classes
+        class_num_left[sorted_values_and_classes[0][1]] = 1
+
+        class_num_right = [0] * num_classes
+        for _, sample_class in sorted_values_and_classes[1:]:
+            class_num_right[sample_class] += 1
+
+        best_children_gini_gain = float('-inf')
+        best_last_left_value = None
+        best_first_right_value = None
+
+        for first_right_index in range(1, len(sorted_values_and_classes)):
+            first_right_value = sorted_values_and_classes[first_right_index][0]
+            if first_right_value != last_left_value:
+                gini_gain = cls._get_gini_value(class_num_left,
+                                                class_num_right,
+                                                num_left_samples,
+                                                num_right_samples)
+                if gini_gain > best_children_gini_gain:
+                    best_children_gini_gain = gini_gain
+                    best_last_left_value = last_left_value
+                    best_first_right_value = first_right_value
+
+                last_left_value = first_right_value
+
+            num_left_samples += 1
+            num_right_samples -= 1
+            first_right_class = sorted_values_and_classes[first_right_index][1]
+            class_num_left[first_right_class] += 1
+            class_num_right[first_right_class] -= 1
+        return (best_children_gini_gain, best_last_left_value, best_first_right_value)
+
+    @classmethod
+    def _get_gini_value(cls, class_num_left, class_num_right, num_left_samples, num_right_samples):
+        left_gini = cls._calculate_gini_index(num_left_samples, class_num_left)
+        right_gini = cls._calculate_gini_index(num_right_samples, class_num_right)
+        gini = ((num_left_samples * left_gini + num_right_samples * right_gini)
+                / (num_left_samples + num_right_samples))
+        return gini
+
 
 #################################################################################################
 #################################################################################################
@@ -140,18 +212,16 @@ class Twoing(Criterion):
         :rtype: criteria.Split
         """
         best_splits_per_attrib = []
-        values_seen_per_attrib = []
-        for attrib_index, is_valid_nominal_attrib in enumerate(tree_node.valid_nominal_attribute):
-            if not is_valid_nominal_attrib:
-                values_seen_per_attrib.append(None)
-                continue
-            else:
+        for (attrib_index,
+             (is_valid_nominal_attrib,
+              is_valid_numeric_attrib)) in enumerate(zip(tree_node.valid_nominal_attribute,
+                                                         tree_node.valid_numeric_attribute)):
+            if is_valid_nominal_attrib:
                 best_total_gini_gain = float('-inf')
                 best_left_values = set()
                 best_right_values = set()
                 values_seen = cls._get_values_seen(
                     tree_node.contingency_tables[attrib_index].values_num_samples)
-                values_seen_per_attrib.append(values_seen)
                 for (set_left_classes,
                      set_right_classes) in cls._generate_twoing(tree_node.class_index_num_samples):
                     (twoing_contingency_table,
@@ -179,10 +249,25 @@ class Twoing(Criterion):
                                                     splits_values=[best_left_values,
                                                                    best_right_values],
                                                     criterion_value=best_total_gini_gain))
+            elif is_valid_numeric_attrib:
+                values_and_classes = cls._get_numeric_values_seen(
+                    tree_node.valid_samples_indices,
+                    tree_node.curr_dataset.samples,
+                    tree_node.curr_dataset.sample_class,
+                    attrib_index)
+                values_and_classes.sort()
+                (best_twoing,
+                 last_left_value,
+                 first_right_value) = cls._twoing_for_numeric(
+                     values_and_classes,
+                     tree_node.curr_dataset.num_classes)
+                best_splits_per_attrib.append(
+                    Split(attrib_index=attrib_index,
+                          splits_values=[{last_left_value}, {first_right_value}],
+                          criterion_value=best_twoing))
         if best_splits_per_attrib:
             return max(best_splits_per_attrib, key=lambda split: split.criterion_value)
-        else:
-            return Split()
+        return Split()
 
     @staticmethod
     def _get_values_seen(values_num_samples):
@@ -362,6 +447,70 @@ class Twoing(Criterion):
                                / (left_num + right_num))
         return children_gini_index
 
+    @staticmethod
+    def _get_numeric_values_seen(valid_samples_indices, sample, sample_class, attrib_index):
+        values_and_classes = []
+        for sample_index in valid_samples_indices:
+            sample_value = sample[sample_index][attrib_index]
+            values_and_classes.append((sample_value, sample_class[sample_index]))
+        return values_and_classes
+
+    @classmethod
+    def _twoing_for_numeric(cls, sorted_values_and_classes, num_classes):
+        last_left_value = sorted_values_and_classes[0][0]
+        num_left_samples = 1
+        num_right_samples = len(sorted_values_and_classes) - 1
+
+        class_num_left = [0] * num_classes
+        class_num_left[sorted_values_and_classes[0][1]] = 1
+
+        class_num_right = [0] * num_classes
+        for _, sample_class in sorted_values_and_classes[1:]:
+            class_num_right[sample_class] += 1
+
+        best_twoing = float('-inf')
+        best_last_left_value = None
+        best_first_right_value = None
+
+        for first_right_index in range(1, len(sorted_values_and_classes)):
+            first_right_value = sorted_values_and_classes[first_right_index][0]
+            if first_right_value != last_left_value:
+                twoing_value = cls._get_twoing_value(class_num_left,
+                                                     class_num_right,
+                                                     num_left_samples,
+                                                     num_right_samples)
+                if twoing_value > best_twoing:
+                    best_twoing = twoing_value
+                    best_last_left_value = last_left_value
+                    best_first_right_value = first_right_value
+
+                last_left_value = first_right_value
+
+            num_left_samples += 1
+            num_right_samples -= 1
+            first_right_class = sorted_values_and_classes[first_right_index][1]
+            class_num_left[first_right_class] += 1
+            class_num_right[first_right_class] -= 1
+        return (best_twoing, best_last_left_value, best_first_right_value)
+
+    @staticmethod
+    def _get_twoing_value(class_num_left, class_num_right, num_left_samples,
+                          num_right_samples):
+        sum_dif = 0.0
+        for left_num, right_num in zip(class_num_left, class_num_right):
+            class_num_tot = class_num_left + class_num_right
+            if class_num_tot == 0:
+                continue
+            sum_dif += abs(left_num / num_left_samples - right_num / num_right_samples)
+
+        num_total_samples = num_left_samples + num_right_samples
+        frequency_left = num_left_samples / num_total_samples
+        frequency_right = num_right_samples / num_total_samples
+
+        twoing_value = (frequency_left * frequency_right / 4.0) * sum_dif ** 2
+        return twoing_value
+
+
 
 #################################################################################################
 #################################################################################################
@@ -392,8 +541,11 @@ class GainRatio(Criterion):
         original_information = cls._calculate_information(tree_node.class_index_num_samples,
                                                           len(tree_node.valid_samples_indices))
         best_splits_per_attrib = []
-        for attrib_index, is_valid_attrib in enumerate(tree_node.valid_nominal_attribute):
-            if is_valid_attrib:
+        for (attrib_index,
+             (is_valid_nominal_attrib,
+              is_valid_numeric_attrib)) in enumerate(zip(tree_node.valid_nominal_attribute,
+                                                         tree_node.valid_numeric_attribute)):
+            if is_valid_nominal_attrib:
                 values_seen = cls._get_values_seen(
                     tree_node.contingency_tables[attrib_index].values_num_samples)
                 splits_values = [set([value]) for value in values_seen]
@@ -405,11 +557,26 @@ class GainRatio(Criterion):
                 best_splits_per_attrib.append(Split(attrib_index=attrib_index,
                                                     splits_values=splits_values,
                                                     criterion_value=curr_gain_ratio))
-
+            elif is_valid_numeric_attrib:
+                values_and_classes = cls._get_numeric_values_seen(
+                    tree_node.valid_samples_indices,
+                    tree_node.curr_dataset.samples,
+                    tree_node.curr_dataset.sample_class,
+                    attrib_index)
+                values_and_classes.sort()
+                (best_gain_ratio,
+                 last_left_value,
+                 first_right_value) = cls._best_for_numeric(
+                     values_and_classes,
+                     tree_node.curr_dataset.num_classes,
+                     original_information)
+                best_splits_per_attrib.append(
+                    Split(attrib_index=attrib_index,
+                          splits_values=[{last_left_value}, {first_right_value}],
+                          criterion_value=best_gain_ratio))
         if best_splits_per_attrib:
             return max(best_splits_per_attrib, key=lambda split: split.criterion_value)
-        else:
-            return Split()
+        return Split()
 
     @staticmethod
     def _get_values_seen(values_num_samples):
@@ -456,6 +623,72 @@ class GainRatio(Criterion):
                 partition_potential_information -= curr_ratio * math.log2(curr_ratio)
         return partition_potential_information
 
+    @staticmethod
+    def _get_numeric_values_seen(valid_samples_indices, sample, sample_class, attrib_index):
+        values_and_classes = []
+        for sample_index in valid_samples_indices:
+            sample_value = sample[sample_index][attrib_index]
+            values_and_classes.append((sample_value, sample_class[sample_index]))
+        return values_and_classes
+
+    @classmethod
+    def _best_for_numeric(cls, sorted_values_and_classes, num_classes, original_information):
+        last_left_value = sorted_values_and_classes[0][0]
+        num_left_samples = 1
+        num_right_samples = len(sorted_values_and_classes) - 1
+
+        class_num_left = [0] * num_classes
+        class_num_left[sorted_values_and_classes[0][1]] = 1
+
+        class_num_right = [0] * num_classes
+        for _, sample_class in sorted_values_and_classes[1:]:
+            class_num_right[sample_class] += 1
+
+        best_gain_ratio = float('-inf')
+        best_last_left_value = None
+        best_first_right_value = None
+
+        for first_right_index in range(1, len(sorted_values_and_classes)):
+            first_right_value = sorted_values_and_classes[first_right_index][0]
+            if first_right_value != last_left_value:
+                gain_ratio = cls._get_gain_ratio_value(class_num_left,
+                                                       class_num_right,
+                                                       num_left_samples,
+                                                       num_right_samples,
+                                                       original_information)
+                if gain_ratio > best_gain_ratio:
+                    best_gain_ratio = gain_ratio
+                    best_last_left_value = last_left_value
+                    best_first_right_value = first_right_value
+
+                last_left_value = first_right_value
+
+            num_left_samples += 1
+            num_right_samples -= 1
+            first_right_class = sorted_values_and_classes[first_right_index][1]
+            class_num_left[first_right_class] += 1
+            class_num_right[first_right_class] -= 1
+        return (best_gain_ratio, best_last_left_value, best_first_right_value)
+
+    @classmethod
+    def _get_gain_ratio_value(cls, class_num_left, class_num_right, num_left_samples,
+                              num_right_samples, original_information):
+        num_samples = num_left_samples + num_right_samples
+        information_gain = original_information # Initial Information Gain
+
+        left_split_information = cls._calculate_information(class_num_left, num_left_samples)
+        information_gain -= (num_left_samples / num_samples) * left_split_information
+        right_split_information = cls._calculate_information(class_num_right, num_right_samples)
+        information_gain -= (num_right_samples / num_samples) * right_split_information
+
+        potential_partition_information = cls._calculate_potential_information(
+            np.array([num_left_samples, num_right_samples], dtype=int),
+            num_samples)
+
+        gain_ratio = information_gain / potential_partition_information
+        return gain_ratio
+
+
 
 #################################################################################################
 #################################################################################################
@@ -487,8 +720,11 @@ class InformationGain(Criterion):
         original_information = cls._calculate_information(tree_node.class_index_num_samples,
                                                           len(tree_node.valid_samples_indices))
         best_splits_per_attrib = []
-        for attrib_index, is_valid_attrib in enumerate(tree_node.valid_nominal_attribute):
-            if is_valid_attrib:
+        for (attrib_index,
+             (is_valid_nominal_attrib,
+              is_valid_numeric_attrib)) in enumerate(zip(tree_node.valid_nominal_attribute,
+                                                         tree_node.valid_numeric_attribute)):
+            if is_valid_nominal_attrib:
                 values_seen = cls._get_values_seen(
                     tree_node.contingency_tables[attrib_index].values_num_samples)
                 splits_values = [set([value]) for value in values_seen]
@@ -500,11 +736,26 @@ class InformationGain(Criterion):
                 best_splits_per_attrib.append(Split(attrib_index=attrib_index,
                                                     splits_values=splits_values,
                                                     criterion_value=curr_information_gain))
-
+            elif is_valid_numeric_attrib:
+                values_and_classes = cls._get_numeric_values_seen(
+                    tree_node.valid_samples_indices,
+                    tree_node.curr_dataset.samples,
+                    tree_node.curr_dataset.sample_class,
+                    attrib_index)
+                values_and_classes.sort()
+                (best_information_gain,
+                 last_left_value,
+                 first_right_value) = cls._best_for_numeric(
+                     values_and_classes,
+                     tree_node.curr_dataset.num_classes,
+                     original_information)
+                best_splits_per_attrib.append(
+                    Split(attrib_index=attrib_index,
+                          splits_values=[{last_left_value}, {first_right_value}],
+                          criterion_value=best_information_gain))
         if best_splits_per_attrib:
             return max(best_splits_per_attrib, key=lambda split: split.criterion_value)
-        else:
-            return Split()
+        return Split()
 
     @staticmethod
     def _get_values_seen(values_num_samples):
@@ -534,3 +785,62 @@ class InformationGain(Criterion):
                 curr_frequency = curr_class_num_samples / num_valid_samples
                 information -= curr_frequency * math.log2(curr_frequency)
         return information
+
+    @staticmethod
+    def _get_numeric_values_seen(valid_samples_indices, sample, sample_class, attrib_index):
+        values_and_classes = []
+        for sample_index in valid_samples_indices:
+            sample_value = sample[sample_index][attrib_index]
+            values_and_classes.append((sample_value, sample_class[sample_index]))
+        return values_and_classes
+
+    @classmethod
+    def _best_for_numeric(cls, sorted_values_and_classes, num_classes, original_information):
+        last_left_value = sorted_values_and_classes[0][0]
+        num_left_samples = 1
+        num_right_samples = len(sorted_values_and_classes) - 1
+
+        class_num_left = [0] * num_classes
+        class_num_left[sorted_values_and_classes[0][1]] = 1
+
+        class_num_right = [0] * num_classes
+        for _, sample_class in sorted_values_and_classes[1:]:
+            class_num_right[sample_class] += 1
+
+        best_information_gain = float('-inf')
+        best_last_left_value = None
+        best_first_right_value = None
+
+        for first_right_index in range(1, len(sorted_values_and_classes)):
+            first_right_value = sorted_values_and_classes[first_right_index][0]
+            if first_right_value != last_left_value:
+                information_gain = cls._get_information_gain_value(class_num_left,
+                                                                   class_num_right,
+                                                                   num_left_samples,
+                                                                   num_right_samples,
+                                                                   original_information)
+                if information_gain > best_information_gain:
+                    best_information_gain = information_gain
+                    best_last_left_value = last_left_value
+                    best_first_right_value = first_right_value
+
+                last_left_value = first_right_value
+
+            num_left_samples += 1
+            num_right_samples -= 1
+            first_right_class = sorted_values_and_classes[first_right_index][1]
+            class_num_left[first_right_class] += 1
+            class_num_right[first_right_class] -= 1
+        return (best_information_gain, best_last_left_value, best_first_right_value)
+
+    @classmethod
+    def _get_information_gain_value(cls, class_num_left, class_num_right, num_left_samples,
+                                    num_right_samples, original_information):
+        num_samples = num_left_samples + num_right_samples
+        information_gain = original_information # Initial Information Gain
+
+        left_split_information = cls._calculate_information(class_num_left, num_left_samples)
+        information_gain -= (num_left_samples / num_samples) * left_split_information
+        right_split_information = cls._calculate_information(class_num_right, num_right_samples)
+        information_gain -= (num_right_samples / num_samples) * right_split_information
+        return information_gain

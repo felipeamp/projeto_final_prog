@@ -36,7 +36,7 @@ class TestGiniGainTwoClasses(unittest.TestCase):
                                     self.config["class attrib index"],
                                     self.config["split char"],
                                     self.config["missing value string"],
-                                    load_numeric=False)
+                                    load_numeric=True)
         self.decision_tree = decision_tree.DecisionTree(self.criterion)
 
     def test_gini_gain(self):
@@ -73,7 +73,7 @@ class TestGiniGainMoreClasses(unittest.TestCase):
                                     self.config["class attrib index"],
                                     self.config["split char"],
                                     self.config["missing value string"],
-                                    load_numeric=False)
+                                    load_numeric=True)
         self.decision_tree = decision_tree.DecisionTree(self.criterion)
 
     def test_gini_gain(self):
@@ -110,7 +110,7 @@ class TestTwoingTwoClasses(unittest.TestCase):
                                     self.config["class attrib index"],
                                     self.config["split char"],
                                     self.config["missing value string"],
-                                    load_numeric=False)
+                                    load_numeric=True)
         self.decision_tree = decision_tree.DecisionTree(self.criterion)
 
     def test_twoing(self):
@@ -147,7 +147,7 @@ class TestTwoingMoreClasses(unittest.TestCase):
                                     self.config["class attrib index"],
                                     self.config["split char"],
                                     self.config["missing value string"],
-                                    load_numeric=False)
+                                    load_numeric=True)
         self.decision_tree = decision_tree.DecisionTree(self.criterion)
 
     def test_twoing(self):
@@ -184,7 +184,7 @@ class TestGainRatioTwoClasses(unittest.TestCase):
                                     self.config["class attrib index"],
                                     self.config["split char"],
                                     self.config["missing value string"],
-                                    load_numeric=False)
+                                    load_numeric=True)
         self.decision_tree = decision_tree.DecisionTree(self.criterion)
 
     def test_gain_ratio(self):
@@ -221,7 +221,7 @@ class TestGainRatioMoreClasses(unittest.TestCase):
                                     self.config["class attrib index"],
                                     self.config["split char"],
                                     self.config["missing value string"],
-                                    load_numeric=False)
+                                    load_numeric=True)
         self.decision_tree = decision_tree.DecisionTree(self.criterion)
 
     def test_gain_ratio(self):
@@ -260,7 +260,7 @@ class TestInformationGainTwoClasses(unittest.TestCase):
                                     self.config["class attrib index"],
                                     self.config["split char"],
                                     self.config["missing value string"],
-                                    load_numeric=False)
+                                    load_numeric=True)
         self.decision_tree = decision_tree.DecisionTree(self.criterion)
 
     def test_information_gain(self):
@@ -297,7 +297,7 @@ class TestInformationGainMoreClasses(unittest.TestCase):
                                     self.config["class attrib index"],
                                     self.config["split char"],
                                     self.config["missing value string"],
-                                    load_numeric=False)
+                                    load_numeric=True)
         self.decision_tree = decision_tree.DecisionTree(self.criterion)
 
     def test_information_gain(self):
