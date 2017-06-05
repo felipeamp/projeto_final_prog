@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; dectree 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dectree 1.0 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="decision_tree.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="dataset.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <span class="target" id="module-criteria"></span><p>Module containing all criteria available for splitting.</p>
+<dl class="class">
+<dt id="criteria.Criterion">
+<em class="property">class </em><code class="descclassname">criteria.</code><code class="descname">Criterion</code><a class="headerlink" href="#criteria.Criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Abstract base class for every criterion.</p>
+<dl class="attribute">
+<dt id="criteria.Criterion.name">
+<code class="descname">name</code><em class="property"> = ''</em><a class="headerlink" href="#criteria.Criterion.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="criteria.Criterion.select_best_attribute_and_split">
+<em class="property">classmethod </em><code class="descname">select_best_attribute_and_split</code><span class="sig-paren">(</span><em>tree_node</em><span class="sig-paren">)</span><a class="headerlink" href="#criteria.Criterion.select_best_attribute_and_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best split found, according to the criterion.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="criteria.GainRatio">
+<em class="property">class </em><code class="descclassname">criteria.</code><code class="descname">GainRatio</code><a class="headerlink" href="#criteria.GainRatio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#criteria.Criterion" title="criteria.Criterion"><code class="xref py py-class docutils literal"><span class="pre">criteria.Criterion</span></code></a></p>
+<p>Gain Ratio criterion. For reference see &#8220;Quinlan, J. R. C4.5: Programs for Machine Learning.
+Morgan Kaufmann Publishers, 1993.&#8221;.</p>
+<dl class="attribute">
+<dt id="criteria.GainRatio.name">
+<code class="descname">name</code><em class="property"> = 'Gain Ratio'</em><a class="headerlink" href="#criteria.GainRatio.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="criteria.GainRatio.select_best_attribute_and_split">
+<em class="property">classmethod </em><code class="descname">select_best_attribute_and_split</code><span class="sig-paren">(</span><em>tree_node</em><span class="sig-paren">)</span><a class="headerlink" href="#criteria.GainRatio.select_best_attribute_and_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best attribute and its best split, according to the Gain Ratio criterion.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tree_node</strong> (<a class="reference internal" href="decision_tree.html#decision_tree.TreeNode" title="decision_tree.TreeNode"><em>decision_tree.TreeNode</em></a>) &#8211; TreeNode where we want to find the best
+attribute/split.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the best Split found.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#criteria.Split" title="criteria.Split">criteria.Split</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="criteria.GiniGain">
+<em class="property">class </em><code class="descclassname">criteria.</code><code class="descname">GiniGain</code><a class="headerlink" href="#criteria.GiniGain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#criteria.Criterion" title="criteria.Criterion"><code class="xref py py-class docutils literal"><span class="pre">criteria.Criterion</span></code></a></p>
+<p>Gini Gain criterion. For reference see &#8220;Breiman, L., Friedman, J. J., Olshen, R. A., and
+Stone, C. J. Classification and Regression Trees. Wadsworth, 1984&#8221;.</p>
+<dl class="attribute">
+<dt id="criteria.GiniGain.name">
+<code class="descname">name</code><em class="property"> = 'Gini Gain'</em><a class="headerlink" href="#criteria.GiniGain.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="criteria.GiniGain.select_best_attribute_and_split">
+<em class="property">classmethod </em><code class="descname">select_best_attribute_and_split</code><span class="sig-paren">(</span><em>tree_node</em><span class="sig-paren">)</span><a class="headerlink" href="#criteria.GiniGain.select_best_attribute_and_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best attribute and its best split, according to the Gini Gain criterion.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tree_node</strong> (<a class="reference internal" href="decision_tree.html#decision_tree.TreeNode" title="decision_tree.TreeNode"><em>decision_tree.TreeNode</em></a>) &#8211; TreeNode where we want to find the best
+attribute/split.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the best Split found.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#criteria.Split" title="criteria.Split">criteria.Split</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="criteria.InformationGain">
+<em class="property">class </em><code class="descclassname">criteria.</code><code class="descname">InformationGain</code><a class="headerlink" href="#criteria.InformationGain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#criteria.Criterion" title="criteria.Criterion"><code class="xref py py-class docutils literal"><span class="pre">criteria.Criterion</span></code></a></p>
+<p>Information Gain criterion. For reference see &#8220;Quinlan, J. R. C4.5: Programs for Machine
+Learning. Morgan Kaufmann Publishers, 1993.&#8221;.</p>
+<dl class="attribute">
+<dt id="criteria.InformationGain.name">
+<code class="descname">name</code><em class="property"> = 'Information Gain'</em><a class="headerlink" href="#criteria.InformationGain.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="criteria.InformationGain.select_best_attribute_and_split">
+<em class="property">classmethod </em><code class="descname">select_best_attribute_and_split</code><span class="sig-paren">(</span><em>tree_node</em><span class="sig-paren">)</span><a class="headerlink" href="#criteria.InformationGain.select_best_attribute_and_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best attribute and its best split, according to the Information Gain
+criterion.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tree_node</strong> (<a class="reference internal" href="decision_tree.html#decision_tree.TreeNode" title="decision_tree.TreeNode"><em>decision_tree.TreeNode</em></a>) &#8211; TreeNode where we want to find the best
+attribute/split.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the best Split found.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#criteria.Split" title="criteria.Split">criteria.Split</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="criteria.Split">
+<em class="property">class </em><code class="descclassname">criteria.</code><code class="descname">Split</code><span class="sig-paren">(</span><em>attrib_index</em>, <em>splits_values</em>, <em>criterion_value</em><span class="sig-paren">)</span><a class="headerlink" href="#criteria.Split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">tuple</span></code></p>
+<p>Contains the information about a given split. When empty, defaults to
+<cite>(None, [], float(&#8216;-inf&#8217;))</cite>.</p>
+<dl class="attribute">
+<dt id="criteria.Split.attrib_index">
+<code class="descname">attrib_index</code><a class="headerlink" href="#criteria.Split.attrib_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="criteria.Split.count">
+<code class="descname">count</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span> &rarr; integer -- return number of occurrences of value<a class="headerlink" href="#criteria.Split.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="criteria.Split.criterion_value">
+<code class="descname">criterion_value</code><a class="headerlink" href="#criteria.Split.criterion_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="criteria.Split.index">
+<code class="descname">index</code><span class="sig-paren">(</span><em>value</em><span class="optional">[</span>, <em>start</em><span class="optional">[</span>, <em>stop</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &rarr; integer -- return first index of value.<a class="headerlink" href="#criteria.Split.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="criteria.Split.splits_values">
+<code class="descname">splits_values</code><a class="headerlink" href="#criteria.Split.splits_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="criteria.Twoing">
+<em class="property">class </em><code class="descclassname">criteria.</code><code class="descname">Twoing</code><a class="headerlink" href="#criteria.Twoing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#criteria.Criterion" title="criteria.Criterion"><code class="xref py py-class docutils literal"><span class="pre">criteria.Criterion</span></code></a></p>
+<p>Twoing criterion. For reference see &#8220;Breiman, L., Friedman, J. J., Olshen, R. A., and
+Stone, C. J. Classification and Regression Trees. Wadsworth, 1984&#8221;.</p>
+<dl class="attribute">
+<dt id="criteria.Twoing.name">
+<code class="descname">name</code><em class="property"> = 'Twoing'</em><a class="headerlink" href="#criteria.Twoing.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="criteria.Twoing.select_best_attribute_and_split">
+<em class="property">classmethod </em><code class="descname">select_best_attribute_and_split</code><span class="sig-paren">(</span><em>tree_node</em><span class="sig-paren">)</span><a class="headerlink" href="#criteria.Twoing.select_best_attribute_and_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best attribute and its best split, according to the Twoing criterion.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tree_node</strong> (<a class="reference internal" href="decision_tree.html#decision_tree.TreeNode" title="decision_tree.TreeNode"><em>decision_tree.TreeNode</em></a>) &#8211; TreeNode where we want to find the best
+attribute/split.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the best Split found.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#criteria.Split" title="criteria.Split">criteria.Split</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="dataset.html" title="previous chapter">&lt;no title&gt;</a></li>
+      <li>Next: <a href="decision_tree.html" title="next chapter">&lt;no title&gt;</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/criteria.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Felipe de Albuquerque Mello Pereira.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/criteria.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

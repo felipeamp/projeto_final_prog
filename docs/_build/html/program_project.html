@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Project &mdash; dectree 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dectree 1.0 documentation" href="index.html" />
+    <link rel="next" title="User Manual" href="manual.html" />
+    <link rel="prev" title="Specification" href="program_specification.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="project">
+<h1>Project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h2>
+<p>The platform was designed using <a class="reference external" href="https://en.wikipedia.org/wiki/Object-oriented_programming/">Object Oriented programming (OOP)</a>. For each requirement at least one class (or part of it) was conceived that addressed the issue. For instance: for requirement 1, a module containing criteria, another containing decision tree methods and another allowing to load datasets were developed. For requirement 2, each dataset has a configuration file and it is loaded through the dataset module. For requirement 3, the decision tree module has the necessary methods. The following UML diagrams show the classes developed:</p>
+<div class="align-center figure" id="id1">
+<img alt="_images/dataset.png" src="_images/dataset.png" />
+<p class="caption"><span class="caption-text">dataset UML Diagram</span></p>
+</div>
+<p>The dataset module contains the Dataset class, which includes all the information for a given training/test dataset, and functions to load dataset configuration files.</p>
+<div class="align-center figure" id="id2">
+<img alt="_images/criteria.png" src="_images/criteria.png" />
+<p class="caption"><span class="caption-text">criteria UML Diagram</span></p>
+</div>
+<p>The criteria module contains different splitting criterion. Each one of them has one method, called <cite>select_best_attribute_and_split()</cite>. It is called in each tree node to find the best attribute to split and the best (binary or multiway) split for this attribute.</p>
+<div class="align-center figure" id="id3">
+<img alt="_images/decision_tree.png" src="_images/decision_tree.png" />
+<p class="caption"><span class="caption-text">decision_tree UML Diagram</span></p>
+</div>
+<p>The decision_tree module contains three different classes. The most basic one is a NodeSplit: it contains the splitting information of a tree node, such as the attribute to be used at the split, the values pointing to each child node, etc. The &#8220;intermediate&#8221; class is a TreeNode: it contains all the information pertained to a node in the decision tree, such as which attributes are valid, nominal or numeric, the class of each training sample that got to this node and the contingency tables of each attribute, among other things. The topmost class is a DecisionTree. It has methods to train, test, cross-validate and get tree information such as maximum depth. It also contains the root TreeNode of a tree (once trained) and the criterion to be used during training.</p>
+</div>
+<div class="section" id="testing-methodology">
+<h2>Testing Methodology<a class="headerlink" href="#testing-methodology" title="Permalink to this headline">¶</a></h2>
+<p>The testing methodology used to develop the library was <a class="reference external" href="https://en.wikipedia.org/wiki/Test-driven_development">Test Driven Development</a>. The library&#8217;s testing coverage was of 84% computed using the <a class="reference external" href="https://coverage.readthedocs.io/en/coverage-4.4.1/">coverage.py</a> library.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Project</a><ul>
+<li><a class="reference internal" href="#architecture">Architecture</a></li>
+<li><a class="reference internal" href="#testing-methodology">Testing Methodology</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="program_specification.html" title="previous chapter">Specification</a></li>
+      <li>Next: <a href="manual.html" title="next chapter">User Manual</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/program_project.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Felipe de Albuquerque Mello Pereira.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/program_project.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

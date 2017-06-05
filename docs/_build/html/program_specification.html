@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Specification &mdash; dectree 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dectree 1.0 documentation" href="index.html" />
+    <link rel="next" title="Project" href="program_project.html" />
+    <link rel="prev" title="Welcome to dectree’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="specification">
+<h1>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Decision Trees are used in many applications, ranging from biomedical to credit prediction. One of the main reasons of using it as a prediction algorithm is the high interpretability of the outcome and good accuracy.</p>
+<p>The aim of this library is to allow users to load datasets and create a decision tree to classify samples with unkown classes. It includes the main splitting criteria used in the market, such as Gini Gain, Twoing, Information Gain and Gain Ratio. A module for loading datasets and another to run experiments with decision trees are also included.</p>
+<p>The module was develop in Python 3.6.1 using the following libraries:</p>
+<blockquote>
+<div><ul class="simple">
+<li>numpy 1.12.1</li>
+<li>scipy 0.19.0</li>
+<li>scikit-learn 0.18.1</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>Given the objective of the library, the following software requirements specifications were layed out:</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Ready to Go</dt>
+<dd><ul class="first last simple">
+<li><strong>Objective</strong>: The library should include at least a few splitting criteria already implemented. It should also allow the user to load train and test datasets and to train/test decision trees using them.</li>
+<li><strong>Description</strong>: Since the main objective of the library is to let the user train decision trees on a given dataset and use its predicion on a different dataset, this is a must.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Reproducibility</dt>
+<dd><ul class="first last simple">
+<li><strong>Objective</strong>: The library should ensure reproducibility.</li>
+<li><strong>Description</strong>: The end user have to be able to reproduce the experiments when using the same dataset/criterion. This should be done through a dataset configuration file.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Performance</dt>
+<dd><ul class="first last simple">
+<li><strong>Objective</strong>: The library should provide mechanism for evaluating the decision trees&#8217; training and test results.</li>
+<li><strong>Description</strong>: The user must be able to measure the accuracy and size/depth of the trained decision trees.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</div>
+<div class="section" id="use-case">
+<h2>Use Case<a class="headerlink" href="#use-case" title="Permalink to this headline">¶</a></h2>
+<p>First the user should be able to load a train dataset. It should have a corresponding dataset configuration file.</p>
+<p>Later, when choosing which splitting criterion to use with the given dataset, the user should be able to do a cross-validation with different criteria and choose the one that gives the best accuracy. Then, the user would train the decision tree with the chosen criterion using the whole trainind dataset.</p>
+<p>Afterwards, the user would load a test dataset (in the same format as the training dataset) and test the accuracy of the previously trained decision tree in this test set.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Specification</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#use-case">Use Case</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to dectree&#8217;s documentation!</a></li>
+      <li>Next: <a href="program_project.html" title="next chapter">Project</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/program_specification.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Felipe de Albuquerque Mello Pereira.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/program_specification.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
