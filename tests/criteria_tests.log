@@ -1,0 +1,125 @@
+Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+	Sample 11 with wrong number of attributes: 6 instead of 5.
+
+	11,c,b,3.5,0,0
+
+
+Starting tree training...
+Starting pruning trivial subtrees...
+Done!
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+	Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+	Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+	Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+	Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+Starting tree training...
+Starting pruning trivial subtrees...
+Done!
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+	Sample 11 with wrong number of attributes: 6 instead of 5.
+
+	11,c,b,3.5,0,0
+
+
+Starting tree training...
+Starting pruning trivial subtrees...
+Done!
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+	Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+	Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+	Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+	Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+Starting tree training...
+Starting pruning trivial subtrees...
+Done!
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+	Sample 11 with wrong number of attributes: 6 instead of 5.
+
+	11,c,b,3.5,0,0
+
+
+Starting tree training...
+Starting pruning trivial subtrees...
+Done!
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+	Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+	Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+	Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+	Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+Starting tree training...
+Starting pruning trivial subtrees...
+Done!
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+	Sample 11 with wrong number of attributes: 6 instead of 5.
+
+	11,c,b,3.5,0,0
+
+
+Starting tree training...
+Starting pruning trivial subtrees...
+Done!
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+	Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+	Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+	Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+	Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+Starting tree training...
+Starting pruning trivial subtrees...
+Done!
+.
+----------------------------------------------------------------------
+Ran 8 tests in 0.005s
+
+OK

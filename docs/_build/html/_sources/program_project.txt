@@ -34,4 +34,4 @@ The decision_tree module contains three different classes. The most basic one is
 Testing Methodology
 ###################
 
-The testing methodology used to develop the library was `Test Driven Development <https://en.wikipedia.org/wiki/Test-driven_development>`_. The library's testing coverage was of 84% computed using the `coverage.py <https://coverage.readthedocs.io/en/coverage-4.4.1/>`_ library.
+The testing methodology used to develop the library was `Test Driven Development <https://en.wikipedia.org/wiki/Test-driven_development>`_. For that, it was used the Python UnitTesting Framework. Our library's testing coverage was of 84% computed using the `coverage.py <https://coverage.readthedocs.io/en/coverage-4.4.1/>`_ library.

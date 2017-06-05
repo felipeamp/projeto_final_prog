@@ -1,0 +1,332 @@
+Loading dataset configuration file for "./data/train_dataset1".
+.data.csv file does not exist in folder "./data/wrong_configs/config_3".
+Skipping this dataset.
+.data.csv file does not exist in folder "./data/wrong_configs/config_2".
+Skipping this dataset.
+.data.csv file does not exist in folder "./data/wrong_configs/config_5".
+Skipping this dataset.
+.data.csv file does not exist in folder "./data/wrong_configs/config_1".
+Skipping this dataset.
+.data.csv file does not exist in folder "./data/wrong_configs/config_4".
+Skipping this dataset.
+."config.json" file does not exist in folder ".".
+Skipping this dataset.
+.Loading dataset configuration file for "./data/dataset_without_valid_attributes".
+
+LOADING dataset...
+Must have at least ONE valid attribute.
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+Loading dataset configuration file for "./data/test_dataset2".
+    Sample 10 with wrong number of attributes: 1 instead of 5.
+
+
+
+
+    Sample 12 with wrong number of attributes: 6 instead of 5.
+
+    21,c,b,3.5,17.5,3
+
+
+Time taken to load test dataset: 0.005119s
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+Loading dataset configuration file for "./data/test_dataset2".
+    Sample 10 with wrong number of attributes: 1 instead of 5.
+
+
+
+
+    Sample 12 with wrong number of attributes: 6 instead of 5.
+
+    21,c,b,3.5,17.5,3
+
+
+Time taken to load test dataset: 0.000082s
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+Loading dataset configuration file for "./data/test_dataset2".
+    Sample 10 with wrong number of attributes: 1 instead of 5.
+
+
+
+
+    Sample 12 with wrong number of attributes: 6 instead of 5.
+
+    21,c,b,3.5,17.5,3
+
+
+Time taken to load test dataset: 0.000083s
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 1 (numeric_attrib)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset1".
+
+LOADING dataset...
+No key attribute used! Numbering samples in order of appearance.
+    Sample 6 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample 7 with wrong number of attributes: 1 instead of 4.
+
+
+
+
+    Sample sample_7 has a missing value in attribute 2 (nominal_attrib2)
+    Sample sample_13 has a missing value in attribute 2 (nominal_attrib2)
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+.Loading dataset configuration file for "./data/train_dataset2".
+
+LOADING dataset...
+    Sample 11 with wrong number of attributes: 6 instead of 5.
+
+    11,c,b,3.5,0,0
+
+
+Loading dataset configuration file for "./data/wrong_test_dataset2".
+Test dataset header is not equal to train dataset header.
+.
+----------------------------------------------------------------------
+Ran 32 tests in 0.018s
+
+OK
