@@ -125,10 +125,11 @@
 <p>Finally it does a cross-validation with four different criteria, <cite>Gini Gain</cite>, <cite>Twoing</cite>, <cite>Information Gain</cite> and <cite>Gain Ratio</cite>, and prints each one&#8217;s accuracy.</p>
 <p>The output of the cross-validation, for each criterion, is:</p>
 <blockquote>
-<div>Accuracy for criterion Gini Gain: 80.56%
-Accuracy for criterion Twoing: 84.93%
-Accuracy for criterion Information Gain: 83.58%
-Accuracy for criterion Gain Ratio: 82.76%</div></blockquote>
+<div><p>Accuracy for criterion Gini Gain: 80.56%</p>
+<p>Accuracy for criterion Twoing: 84.93%</p>
+<p>Accuracy for criterion Information Gain: 83.58%</p>
+<p>Accuracy for criterion Gain Ratio: 82.76%</p>
+</div></blockquote>
 <p>Now that we know the <cite>Twoing</cite> criterion had the best accuracy, we use the whole train dataset to train a decision tree.</p>
 <div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -195,28 +196,29 @@ Accuracy for criterion Gain Ratio: 82.76%</div></blockquote>
                                                  <span class="n">train_dataset</span><span class="o">.</span><span class="n">class_int_to_name</span><span class="p">[</span><span class="n">prediction</span><span class="p">]))</span>
 </pre></div>
 </td></tr></table></div>
-<p>Lastly, we load the test dataset and classify the samples in it. Later we check with the correct classes (which are not always available) to see the accuracy.</p>
+<p>Lastly, we load the test dataset and classify the samples in it. Later we print the classification prediction for each sample.</p>
 <blockquote>
 <div><p>Decision Tree predictions on test set:</p>
 <blockquote>
-<div>Test sample #0: class &#8220;&lt;=50K&#8221;
-Test sample #1: class &#8220;&gt;50K&#8221;
-Test sample #2: class &#8220;&lt;=50K&#8221;
-Test sample #3: class &#8220;&lt;=50K&#8221;
-Test sample #4: class &#8220;&lt;=50K&#8221;
-Test sample #5: class &#8220;&lt;=50K&#8221;
-Test sample #6: class &#8220;&lt;=50K&#8221;
-Test sample #7: class &#8220;&lt;=50K&#8221;
-Test sample #8: class &#8220;&lt;=50K&#8221;
-Test sample #9: class &#8220;&lt;=50K&#8221;
-Test sample #10: class &#8220;&gt;50K&#8221;
-Test sample #11: class &#8220;&lt;=50K&#8221;
-Test sample #12: class &#8220;&lt;=50K&#8221;
-Test sample #13: class &#8220;&lt;=50K&#8221;
-Test sample #14: class &#8220;&lt;=50K&#8221;
-Test sample #15: class &#8220;&gt;50K&#8221;
-Test sample #16: class &#8220;&lt;=50K&#8221;
-Test sample #17: class &#8220;&lt;=50K&#8221;</div></blockquote>
+<div><p>Test sample #0: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #1: class &#8220;&gt;50K&#8221;</p>
+<p>Test sample #2: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #3: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #4: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #5: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #6: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #7: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #8: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #9: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #10: class &#8220;&gt;50K&#8221;</p>
+<p>Test sample #11: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #12: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #13: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #14: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #15: class &#8220;&gt;50K&#8221;</p>
+<p>Test sample #16: class &#8220;&lt;=50K&#8221;</p>
+<p>Test sample #17: class &#8220;&lt;=50K&#8221;</p>
+</div></blockquote>
 <p>[...]</p>
 </div></blockquote>
 </div>

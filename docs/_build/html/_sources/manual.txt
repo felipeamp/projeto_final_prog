@@ -27,8 +27,11 @@ Finally it does a cross-validation with four different criteria, `Gini Gain`, `T
 The output of the cross-validation, for each criterion, is:
 
     Accuracy for criterion Gini Gain: 80.56%
+
     Accuracy for criterion Twoing: 84.93%
+
     Accuracy for criterion Information Gain: 83.58%
+
     Accuracy for criterion Gain Ratio: 82.76%
 
 Now that we know the `Twoing` criterion had the best accuracy, we use the whole train dataset to train a decision tree.
@@ -38,26 +41,43 @@ Now that we know the `Twoing` criterion had the best accuracy, we use the whole 
     :language: python
     :lines: 15-46
 
-Lastly, we load the test dataset and classify the samples in it. Later we check with the correct classes (which are not always available) to see the accuracy.
+Lastly, we load the test dataset and classify the samples in it. Later we print the classification prediction for each sample.
 
     Decision Tree predictions on test set:
 
         Test sample #0: class "<=50K"
+
         Test sample #1: class ">50K"
+
         Test sample #2: class "<=50K"
+
         Test sample #3: class "<=50K"
+
         Test sample #4: class "<=50K"
+
         Test sample #5: class "<=50K"
+
         Test sample #6: class "<=50K"
+
         Test sample #7: class "<=50K"
+
         Test sample #8: class "<=50K"
+
         Test sample #9: class "<=50K"
+
         Test sample #10: class ">50K"
+
         Test sample #11: class "<=50K"
+
         Test sample #12: class "<=50K"
+
         Test sample #13: class "<=50K"
+
         Test sample #14: class "<=50K"
+
         Test sample #15: class ">50K"
+
         Test sample #16: class "<=50K"
+
         Test sample #17: class "<=50K"
     [...]
